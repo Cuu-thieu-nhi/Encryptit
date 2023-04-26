@@ -133,13 +133,15 @@ public class MainActivity extends AppCompatActivity {
                     set.add(imageUri);
                 }
                 for (Uri uri : set) {
-                    Thread thread = new Thread(() -> addFileToEncrypt.AddSingleFile(uri));
-                    thread.start();
+//                    Thread thread = new Thread(() -> addFileToEncrypt.AddSingleFile(uri));
+//                    thread.start();
+                    addFileToEncrypt.AddSingleFile(uri);
                 }
             } else if (data.getData() != null) {
                 Uri fileUri = data.getData();
-                Thread thread = new Thread(() -> addFileToEncrypt.AddSingleFile(fileUri));
-                thread.start();
+//                Thread thread = new Thread(() -> addFileToEncrypt.AddSingleFile(fileUri));
+//                thread.start();
+                addFileToEncrypt.AddSingleFile(fileUri);
             }
         }
         Toast.makeText(this, "Đã chọn " + set.size(), Toast.LENGTH_SHORT).show();

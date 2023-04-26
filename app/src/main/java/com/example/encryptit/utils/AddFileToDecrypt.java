@@ -1,6 +1,7 @@
 package com.example.encryptit.utils;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -14,7 +15,7 @@ import javax.crypto.SecretKey;
 public class AddFileToDecrypt {
 
     static Context context;
-    FileDAO db;
+    static FileDAO db;
 
     public AddFileToDecrypt(Context context, FileDAO db) {
         this.context = context;
@@ -35,5 +36,9 @@ public class AddFileToDecrypt {
         String name = f.getFileName();
         SecretKey key = MyKeyStore.loadSecretKey(context, path);
         MyEncrypter.decryptFile(location + "/" + name + ".encrypt", path, key);
+
+        db.deleteFile(f);
+
+        Log.d("AddFileToDecrypt", "addSingleFile: decrypt ok");
     }
 }

@@ -2,6 +2,8 @@ package com.example.encryptit.cryptography;
 
 import android.util.Log;
 
+import com.example.encryptit.utils.DeleteFile;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -49,8 +51,7 @@ public class MyEncrypter {
             inputStream.close();
             outputStream.close();
 
-            File f = new File(inputFilePath);
-            f.delete();
+            DeleteFile.deleteFile(inputFilePath);
         } catch (NoSuchPaddingException e) {
             Log.d(TAG, "encryptFile: NoSuchPaddingException");
             throw new RuntimeException(e);
@@ -99,8 +100,7 @@ public class MyEncrypter {
             inputStream.close();
             outputStream.close();
 
-            File f = new File(inputFilePath);
-            f.delete();
+            DeleteFile.deleteFile(inputFilePath);
         } catch (NoSuchPaddingException e) {
             throw new RuntimeException(e);
         } catch (IllegalBlockSizeException e) {

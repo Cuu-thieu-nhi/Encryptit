@@ -29,6 +29,9 @@
             android:name=".view.LoginActivity"
             android:exported="false" />
         <activity
+            android:name=".view.ImageViewActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.FirstActivity"
             android:exported="true">
             <intent-filter>

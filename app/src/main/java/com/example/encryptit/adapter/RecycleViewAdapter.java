@@ -18,11 +18,13 @@ import java.util.List;
 
 public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.ViewHolder> {
     Context context;
+    private IClickImageListener iClickImageListener;
     private List<TempFileToView> decryptedImages;
 
 
-    public RecycleViewAdapter(List<TempFileToView> decryptedImages, Context context) {
+    public RecycleViewAdapter(List<TempFileToView> decryptedImages, Context context, IClickImageListener iClickImageListener) {
         this.decryptedImages = decryptedImages;
+        this.iClickImageListener = iClickImageListener;
         this.context = context;
     }
 
@@ -44,6 +46,12 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
         if (encryptedImage == null)
             return;
         Glide.with(context).load(encryptedImage.getData()).into(holder.imageView);
+        holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                iClickImageListener.onClickImageListener(encryptedImage);
+            }
+        });
     }
 
     @Override

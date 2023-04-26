@@ -1,6 +1,8 @@
 package com.example.encryptit.model;
 
-public class TempFileToView {
+import java.io.Serializable;
+
+public class TempFileToView implements Serializable {
     EncryptFile file;
     byte[] data;
 

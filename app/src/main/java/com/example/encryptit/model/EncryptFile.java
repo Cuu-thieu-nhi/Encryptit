@@ -1,6 +1,8 @@
 package com.example.encryptit.model;
 
-public class EncryptFile {
+import java.io.Serializable;
+
+public class EncryptFile implements Serializable {
     private String filePath;  // /storage/emulated/0/Download/abc.txt
     private String fileNameAndExtension; // abc.txt
     private String fileName; // abc

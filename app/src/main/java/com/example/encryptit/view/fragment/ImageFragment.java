@@ -2,6 +2,7 @@ package com.example.encryptit.view.fragment;
 
 import static com.example.encryptit.utils.AddFileToDecrypt.addSingleFile;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.encryptit.R;
+import com.example.encryptit.adapter.IClickImageListener;
 import com.example.encryptit.adapter.RecycleViewAdapter;
 import com.example.encryptit.cryptography.MyEncrypter;
 import com.example.encryptit.cryptography.MyKeyStore;
@@ -23,6 +25,7 @@ import com.example.encryptit.database.FileDAO;
 import com.example.encryptit.model.EncryptFile;
 import com.example.encryptit.model.TempFileToView;
 import com.example.encryptit.utils.AddFileToDecrypt;
+import com.example.encryptit.view.ImageViewActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +76,12 @@ public class ImageFragment extends Fragment {
             imagesToView.add(t);
         }
 
-        adapter = new RecycleViewAdapter(imagesToView, getContext());
+        adapter = new RecycleViewAdapter(imagesToView, getContext(), new IClickImageListener() {
+            @Override
+            public void onClickImageListener(TempFileToView encryptedImage) {
+                onClickGoToImageView(encryptedImage);
+            }
+        });
 
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 4));
         recyclerView.setAdapter(adapter);
@@ -83,10 +91,14 @@ public class ImageFragment extends Fragment {
             public void onClick(View v) {
                 int i = 0;
                 for (EncryptFile f : encryptedImages) {
-                    addSingleFile(f);
-                    i++;
+//                    Thread thread = new Thread(() ->  AddFileToDecrypt.addSingleFile(f));
+//                    thread.start();
+                    AddFileToDecrypt.addSingleFile(f);
+
+                    imagesToView.remove(i);
 
                 }
+                adapter.setDecryptedImages(imagesToView);
             }
         });
         return view;
@@ -109,4 +121,14 @@ public class ImageFragment extends Fragment {
         }
         adapter.setDecryptedImages(imagesToView);
     }
+
+    private void onClickGoToImageView(TempFileToView encryptedImage) {
+        Intent intent = new Intent(getContext(), ImageViewActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("object_image", encryptedImage.getFile());
+        intent.putExtras(bundle);
+        this.startActivity(intent);
+    }
+
+
 }

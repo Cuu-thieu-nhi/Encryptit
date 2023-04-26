@@ -58,6 +58,12 @@ public class FileDAO {
 
     }
 
+    public void deleteFile(EncryptFile encryptFile) {
+        open();
+        db.delete(DatabaseHelper.TABLE_FILE, DatabaseHelper.COLUMN_FILE_PATH + " = ?", new String[]{String.valueOf(encryptFile.getFilePath())});
+        close();
+    }
+
     public List<EncryptFile> getAllImages() {
         open();
         List<EncryptFile> encryptFiles = new ArrayList<>();
@@ -138,21 +144,12 @@ public class FileDAO {
         try {
             open();
 
-            String[] projection = {
-                    DatabaseHelper.COLUMN_FILE_PATH,
-                    DatabaseHelper.COLUMN_FILE_NAME_AND_EXTENSION,
-                    DatabaseHelper.COLUMN_FILE_NAME,
-                    DatabaseHelper.COLUMN_FILE_EXTENSION,
-                    DatabaseHelper. COLUMN_FILE_LOCATION,
-                    DatabaseHelper.COLUMN_ALIAS,
-                    DatabaseHelper.COLUMN_IS_IMAGE
-            };
+            String[] projection = {DatabaseHelper.COLUMN_FILE_PATH, DatabaseHelper.COLUMN_FILE_NAME_AND_EXTENSION, DatabaseHelper.COLUMN_FILE_NAME, DatabaseHelper.COLUMN_FILE_EXTENSION, DatabaseHelper.COLUMN_FILE_LOCATION, DatabaseHelper.COLUMN_ALIAS, DatabaseHelper.COLUMN_IS_IMAGE};
             String selection = DatabaseHelper.COLUMN_IS_IMAGE + "=?";
-            String[] selectionArgs = { "0" };
+            String[] selectionArgs = {"0"};
             String sortOrder = null;
 
-            Cursor cursor = db.query(
-                    DatabaseHelper.TABLE_FILE,  // table name
+            Cursor cursor = db.query(DatabaseHelper.TABLE_FILE,  // table name
                     projection,                 // columns to return
                     selection,                  // columns for WHERE clause
                     selectionArgs,              // values for WHERE clause
@@ -179,8 +176,6 @@ public class FileDAO {
         }
         return encryptFiles;
     }
-
-
 
 
 }

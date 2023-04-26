@@ -53,6 +53,7 @@ public class AddFileToEncrypt {
         Log.d("My", "onActivityResult: " + key.toString());
 
         MyEncrypter.encryptFile(path, location + "/" + name + ".encrypt", key);
+
         Log.d("Tuan", "ma hoa ok");
 
 
