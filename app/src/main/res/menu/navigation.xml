@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/image_frag"
+        android:icon="@drawable/baseline_image_24"
+        android:title="Ảnh" />
+    <item
+        android:id="@+id/file_frag"
+        android:icon="@drawable/baseline_file_24"
+        android:title="File" />
+    <item
+        android:id="@+id/account_frag"
+        android:icon="@drawable/baseline_account_circle_24"
+        android:title="Tài khoản" />
+</menu>
