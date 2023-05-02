@@ -17,8 +17,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.encryptit.R;
 import com.example.encryptit.adapter.ViewPageAdapter;
+import com.example.encryptit.background.AddFileToEncryptTask;
 import com.example.encryptit.database.FileDAO;
-import com.example.encryptit.utils.AddFileToEncrypt;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -26,15 +26,13 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
-
-    FileDAO db;
-
-    AddFileToEncrypt addFileToEncrypt;
+    public static FileDAO db;
     Set<Uri> set = new LinkedHashSet<>();
     int id = 0;
     private BottomNavigationView navigationView;
     private ViewPager viewPager;
     private FloatingActionButton floatingActionButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_view);
 
         db = new FileDAO(MainActivity.this);
-        addFileToEncrypt = new AddFileToEncrypt(MainActivity.this, db);
 
         id = db.getMaxId();
 
@@ -55,13 +52,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.setType("*/*");
-                String[] mimeTypes = {"image/jpeg", "image/png"};
+                String[] mimeTypes = {"image/jpeg", "image/png", "image/bmp", "image/webp", "application/*", "audio/*", "text/*", "video/*"};
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                     intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 }
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select picture"), 1);
+                startActivityForResult(Intent.createChooser(intent, "Select file"), 1);
             }
         });
 
@@ -81,9 +78,6 @@ public class MainActivity extends AppCompatActivity {
                     case 1:
                         navigationView.getMenu().findItem(R.id.file_frag).setChecked(true);
                         break;
-                    case 2:
-                        navigationView.getMenu().findItem(R.id.account_frag).setChecked(true);
-                        break;
                 }
             }
 
@@ -102,14 +96,12 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.file_frag:
                         viewPager.setCurrentItem(1);
                         break;
-                    case R.id.account_frag:
-                        viewPager.setCurrentItem(2);
-                        break;
                 }
                 return true;
             }
         });
     }
+
 
     @Override
     public void onBackPressed() {
@@ -125,25 +117,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            // xử lý nếu chọn 1 lúc nhiều ảnh
             if (data.getClipData() != null) {
                 int x = data.getClipData().getItemCount();
                 for (int i = 0; i < x; i++) {
-                    Uri imageUri = data.getClipData().getItemAt(i).getUri();
-                    set.add(imageUri);
+                    Uri fileUri = data.getClipData().getItemAt(i).getUri();
+                    set.add(fileUri);
                 }
-                for (Uri uri : set) {
-//                    Thread thread = new Thread(() -> addFileToEncrypt.AddSingleFile(uri));
-//                    thread.start();
-                    addFileToEncrypt.AddSingleFile(uri);
-                }
+                Uri[] uriArray = set.toArray(new Uri[set.size()]);
+                AddFileToEncryptTask task = new AddFileToEncryptTask(MainActivity.this);
+                task.execute(uriArray);
             } else if (data.getData() != null) {
                 Uri fileUri = data.getData();
-//                Thread thread = new Thread(() -> addFileToEncrypt.AddSingleFile(fileUri));
-//                thread.start();
-                addFileToEncrypt.AddSingleFile(fileUri);
+                AddFileToEncryptTask task = new AddFileToEncryptTask(MainActivity.this);
+                task.execute(fileUri);
             }
         }
         Toast.makeText(this, "Đã chọn " + set.size(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 }

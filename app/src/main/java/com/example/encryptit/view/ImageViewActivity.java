@@ -10,11 +10,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.encryptit.R;
+import com.example.encryptit.background.AddFileToDecrypt;
+import com.example.encryptit.background.AddImageToDecryptTask;
 import com.example.encryptit.cryptography.MyEncrypter;
 import com.example.encryptit.cryptography.MyKeyStore;
 import com.example.encryptit.database.FileDAO;
 import com.example.encryptit.model.EncryptFile;
-import com.example.encryptit.utils.AddFileToDecrypt;
+import com.example.encryptit.model.TempImageToView;
 
 import javax.crypto.SecretKey;
 
@@ -42,14 +44,16 @@ public class ImageViewActivity extends AppCompatActivity {
         String path = image.getFilePath();
         String location = image.getFileLocation();
         String name = image.getFileName();
-        SecretKey key = MyKeyStore.loadSecretKey(ImageViewActivity.this, image.getFilePath());
+        SecretKey key = MyKeyStore.loadSecretKey(image.getFilePath());
         Glide.with(ImageViewActivity.this).load(MyEncrypter.decryptFileToViewTemporary(location + "/" + name + ".encrypt", key)).into(imageView);
 
         btDec.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AddFileToDecrypt.addSingleFile(image);
-                finish();
+                TempImageToView t = new TempImageToView();
+                t.setFile(image);
+                AddImageToDecryptTask task = new AddImageToDecryptTask(ImageViewActivity.this);
+                task.execute(t);
             }
         });
     }

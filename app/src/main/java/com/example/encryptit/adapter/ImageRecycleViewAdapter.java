@@ -12,37 +12,37 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.encryptit.R;
-import com.example.encryptit.model.TempFileToView;
+import com.example.encryptit.mInterface.IClickImageListener;
+import com.example.encryptit.model.TempImageToView;
 
 import java.util.List;
 
-public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.ViewHolder> {
+public class ImageRecycleViewAdapter extends RecyclerView.Adapter<ImageRecycleViewAdapter.ViewHolder> {
     Context context;
     private IClickImageListener iClickImageListener;
-    private List<TempFileToView> decryptedImages;
+    private List<TempImageToView> decryptedImages;
 
-
-    public RecycleViewAdapter(List<TempFileToView> decryptedImages, Context context, IClickImageListener iClickImageListener) {
+    public ImageRecycleViewAdapter(List<TempImageToView> decryptedImages, Context context, IClickImageListener iClickImageListener) {
         this.decryptedImages = decryptedImages;
         this.iClickImageListener = iClickImageListener;
         this.context = context;
     }
 
-    public void setDecryptedImages(List<TempFileToView> decryptedImages) {
+    public void setDecryptedImages(List<TempImageToView> decryptedImages) {
         this.decryptedImages = decryptedImages;
         notifyDataSetChanged();
     }
 
     @NonNull
     @Override
-    public RecycleViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ImageRecycleViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_single_image, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecycleViewAdapter.ViewHolder holder, int position) {
-        final TempFileToView encryptedImage = decryptedImages.get(position);
+    public void onBindViewHolder(@NonNull ImageRecycleViewAdapter.ViewHolder holder, int position) {
+        final TempImageToView encryptedImage = decryptedImages.get(position);
         if (encryptedImage == null)
             return;
         Glide.with(context).load(encryptedImage.getData()).into(holder.imageView);
@@ -72,5 +72,4 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
             relativeLayout = itemView.findViewById(R.id.relative);
         }
     }
-
 }

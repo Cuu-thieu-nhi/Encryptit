@@ -1,13 +1,12 @@
 package com.example.encryptit.view.fragment;
 
-import static com.example.encryptit.utils.AddFileToDecrypt.addSingleFile;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,37 +16,53 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.encryptit.R;
-import com.example.encryptit.adapter.IClickImageListener;
-import com.example.encryptit.adapter.RecycleViewAdapter;
-import com.example.encryptit.cryptography.MyEncrypter;
-import com.example.encryptit.cryptography.MyKeyStore;
+import com.example.encryptit.adapter.ImageRecycleViewAdapter;
+import com.example.encryptit.background.AddImageToViewTask;
+import com.example.encryptit.background.AddImageToDecryptTask;
 import com.example.encryptit.database.FileDAO;
+import com.example.encryptit.mInterface.IClickImageListener;
 import com.example.encryptit.model.EncryptFile;
-import com.example.encryptit.model.TempFileToView;
-import com.example.encryptit.utils.AddFileToDecrypt;
+import com.example.encryptit.model.TempImageToView;
 import com.example.encryptit.view.ImageViewActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.crypto.SecretKey;
-
 public class ImageFragment extends Fragment {
 
+    public static List<EncryptFile> encryptedImages = new ArrayList<>();
+    public static List<TempImageToView> imagesToView = new ArrayList<>();
+    public static ImageRecycleViewAdapter adapter;
+    FileDAO imageDb;
     RecyclerView recyclerView;
-    Button buttonDecryptAll;
-    TextView textView;
-    List<EncryptFile> encryptedImages = new ArrayList<>();
-    List<TempFileToView> imagesToView = new ArrayList<>();
-    RecycleViewAdapter adapter;
-    FileDAO db;
-    AddFileToDecrypt addFileToDecrypt;
+    ImageButton buttonDecryptAll;
+
+    public static List<EncryptFile> getEncryptedImages() {
+        return encryptedImages;
+    }
+
+    public static void setEncryptedImages(List<EncryptFile> encryptedImages) {
+        ImageFragment.encryptedImages = encryptedImages;
+    }
+
+    public static List<TempImageToView> getImagesToView() {
+        return imagesToView;
+    }
+
+    public static void setImagesToView(List<TempImageToView> imagesToView) {
+        ImageFragment.imagesToView = imagesToView;
+        adapter.setDecryptedImages(imagesToView);
+        adapter.notifyDataSetChanged();
+    }
+
+
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        db = new FileDAO(getContext());
-        addFileToDecrypt = new AddFileToDecrypt(getContext(), db);
+        imageDb = new FileDAO(getContext());
+        encryptedImages = imageDb.getAllImages();
     }
 
     @Nullable
@@ -55,30 +70,12 @@ public class ImageFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.image_fragment, container, false);
         recyclerView = view.findViewById(R.id.recycleViewImageGallery);
-        textView = view.findViewById(R.id.totalPhoto);
+//        textView = view.findViewById(R.id.totalPhoto);
         buttonDecryptAll = view.findViewById(R.id.decryptAll);
 
-        encryptedImages = db.getAllImages();
-
-
-        if (encryptedImages != null) {
-            textView.setText("Photo (" + encryptedImages.size() + ")");
-        }
-
-        for (EncryptFile f : encryptedImages) {
-            TempFileToView t = new TempFileToView();
-            t.setFile(f);
-            String path = f.getFilePath();
-            String location = f.getFileLocation();
-            String name = f.getFileName();
-            SecretKey key = MyKeyStore.loadSecretKey(getContext(), path);
-            t.setData(MyEncrypter.decryptFileToViewTemporary(location + "/" + name + ".encrypt", key));
-            imagesToView.add(t);
-        }
-
-        adapter = new RecycleViewAdapter(imagesToView, getContext(), new IClickImageListener() {
+        adapter = new ImageRecycleViewAdapter(imagesToView, getContext(), new IClickImageListener() {
             @Override
-            public void onClickImageListener(TempFileToView encryptedImage) {
+            public void onClickImageListener(TempImageToView encryptedImage) {
                 onClickGoToImageView(encryptedImage);
             }
         });
@@ -86,49 +83,35 @@ public class ImageFragment extends Fragment {
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 4));
         recyclerView.setAdapter(adapter);
 
+        for (EncryptFile f : encryptedImages) {
+            new AddImageToViewTask().execute(f);
+        }
+
         buttonDecryptAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int i = 0;
-                for (EncryptFile f : encryptedImages) {
-//                    Thread thread = new Thread(() ->  AddFileToDecrypt.addSingleFile(f));
-//                    thread.start();
-                    AddFileToDecrypt.addSingleFile(f);
-
-                    imagesToView.remove(i);
-
+                for (TempImageToView t: imagesToView) {
+                    AddImageToDecryptTask task = new AddImageToDecryptTask(getContext());
+                    task.execute(t);
                 }
-                adapter.setDecryptedImages(imagesToView);
             }
         });
+
+
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        encryptedImages = db.getAllImages();
-        imagesToView.clear();
-        for (EncryptFile f : encryptedImages) {
-            TempFileToView t = new TempFileToView();
-            t.setFile(f);
-            String path = f.getFilePath();
-            String location = f.getFileLocation();
-            String name = f.getFileName();
-            SecretKey key = MyKeyStore.loadSecretKey(getContext(), path);
-            t.setData(MyEncrypter.decryptFileToViewTemporary(location + "/" + name + ".encrypt", key));
-            imagesToView.add(t);
-        }
-        adapter.setDecryptedImages(imagesToView);
+        setImagesToView(imagesToView);
     }
 
-    private void onClickGoToImageView(TempFileToView encryptedImage) {
+    private void onClickGoToImageView(TempImageToView encryptedImage) {
         Intent intent = new Intent(getContext(), ImageViewActivity.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("object_image", encryptedImage.getFile());
         intent.putExtras(bundle);
         this.startActivity(intent);
     }
-
-
 }

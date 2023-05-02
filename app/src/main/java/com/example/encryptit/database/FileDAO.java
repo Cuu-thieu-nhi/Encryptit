@@ -90,6 +90,10 @@ public class FileDAO {
         return encryptFiles;
     }
 
+
+
+
+
 //    public List<EncryptFile> getAllImages() {
 //        List<EncryptFile> encryptFiles = new ArrayList<>();
 //
@@ -109,7 +113,7 @@ public class FileDAO {
 //            String[] selectionArgs = { "1" };
 //            String sortOrder = null;
 //
-//            Cursor cursor = db.query(
+//            Cursor cursor = imageDb.query(
 //                    DatabaseHelper.TABLE_FILE,  // table name
 //                    projection,                 // columns to return
 //                    selection,                  // columns for WHERE clause
@@ -166,7 +170,9 @@ public class FileDAO {
                 encryptFile.setFileExtension(cursor.getString(4));
                 encryptFile.setFileLocation(cursor.getString(5));
                 encryptFile.setAlias(cursor.getString(6));
-                encryptFile.setImage(cursor.getInt(7) == 0);
+                if (cursor.getInt(7) == 1)
+                    encryptFile.setImage(true);
+                else encryptFile.setImage(false);
                 encryptFiles.add(encryptFile);
             }
         } catch (SQLException e) {

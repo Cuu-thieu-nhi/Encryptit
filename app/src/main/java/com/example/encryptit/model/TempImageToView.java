@@ -2,16 +2,16 @@ package com.example.encryptit.model;
 
 import java.io.Serializable;
 
-public class TempFileToView implements Serializable {
+public class TempImageToView implements Serializable {
     EncryptFile file;
     byte[] data;
 
-    public TempFileToView(EncryptFile file, byte[] data) {
+    public TempImageToView(EncryptFile file, byte[] data) {
         this.file = file;
         this.data = data;
     }
 
-    public TempFileToView() {
+    public TempImageToView() {
     }
 
     public EncryptFile getFile() {

@@ -1,4 +1,4 @@
-package com.example.encryptit.utils;
+package com.example.encryptit.background;
 
 import android.content.Context;
 import android.util.Log;
@@ -34,7 +34,7 @@ public class AddFileToDecrypt {
         String path = f.getFilePath();
         String location = f.getFileLocation();
         String name = f.getFileName();
-        SecretKey key = MyKeyStore.loadSecretKey(context, path);
+        SecretKey key = MyKeyStore.loadSecretKey(path);
         MyEncrypter.decryptFile(location + "/" + name + ".encrypt", path, key);
 
         db.deleteFile(f);

@@ -22,7 +22,7 @@ public class MyKeyStore {
 
     private static final String KEY_ALIAS_PREFIX = "my-key-alias";
 
-    public static SecretKey generateSecretKey(Context context, String alias) {
+    public static SecretKey generateSecretKey(String alias) {
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
             keyGenerator.init(new KeyGenParameterSpec.Builder(getFullAlias(alias), KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
@@ -46,7 +46,7 @@ public class MyKeyStore {
         return KEY_ALIAS_PREFIX + "-" + alias;
     }
 
-    public static void saveSecretKey(Context context, SecretKey secretKey, String alias) {
+    public static void saveSecretKey(SecretKey secretKey, String alias) {
         try {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
@@ -62,7 +62,7 @@ public class MyKeyStore {
         }
     }
 
-    public static SecretKey loadSecretKey(Context context, String alias) {
+    public static SecretKey loadSecretKey(String alias) {
         try {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
