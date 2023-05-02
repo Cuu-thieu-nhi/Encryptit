@@ -10,16 +10,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.encryptit.R;
-import com.example.encryptit.database.UserDAO;
 import com.example.encryptit.cryptography.MD5Hash;
+import com.example.encryptit.database.UserDAO;
 import com.example.encryptit.model.User;
 
 public class SignUpActivity extends AppCompatActivity {
-
-
     EditText pass1, pass2, hint;
     Button bt;
-
     UserDAO db;
 
     @Override

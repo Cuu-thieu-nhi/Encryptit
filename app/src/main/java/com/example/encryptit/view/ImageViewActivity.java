@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.encryptit.R;
-import com.example.encryptit.background.AddFileToDecrypt;
 import com.example.encryptit.background.AddImageToDecryptTask;
 import com.example.encryptit.cryptography.MyEncrypter;
 import com.example.encryptit.cryptography.MyKeyStore;
@@ -31,8 +30,8 @@ public class ImageViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_view);
-        EncryptFile image = (EncryptFile) getIntent().getSerializableExtra("object_image");
 
+        EncryptFile image = (EncryptFile) getIntent().getSerializableExtra("object_image");
         db = new FileDAO(ImageViewActivity.this);
 
         tv5 = findViewById(R.id.textView5);
@@ -41,17 +40,19 @@ public class ImageViewActivity extends AppCompatActivity {
 
         tv5.setText(image.getFileLocation() + "/" + image.getFileName() + ".encrypted");
 
-        String path = image.getFilePath();
         String location = image.getFileLocation();
         String name = image.getFileName();
+
         SecretKey key = MyKeyStore.loadSecretKey(image.getFilePath());
-        Glide.with(ImageViewActivity.this).load(MyEncrypter.decryptFileToViewTemporary(location + "/" + name + ".encrypt", key)).into(imageView);
+        byte[] data = MyEncrypter.decryptFileToViewTemporary(location + "/" + name + ".encrypt", key);
+        Glide.with(ImageViewActivity.this).load(data).into(imageView);
 
         btDec.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 TempImageToView t = new TempImageToView();
                 t.setFile(image);
+//                t.setData(data);
                 AddImageToDecryptTask task = new AddImageToDecryptTask(ImageViewActivity.this);
                 task.execute(t);
             }

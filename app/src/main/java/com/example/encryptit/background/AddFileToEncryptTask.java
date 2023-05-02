@@ -12,6 +12,7 @@ import com.example.encryptit.model.EncryptFile;
 import com.example.encryptit.utils.GetFileName;
 import com.example.encryptit.utils.GetPathFromUri;
 import com.example.encryptit.view.MainActivity;
+import com.example.encryptit.view.fragment.FileFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,9 @@ public class AddFileToEncryptTask extends AsyncTask<Uri, Void, List<EncryptFile>
             encryptFile.setFileName(name);
             encryptFile.setFileExtension(extension);
             encryptFile.setFileLocation(location);
+
             encryptFile.setImage(extension.equals("jpg") || extension.equals("png") || extension.equals("bmp") || extension.equals("webp"));
+
             encryptFile.setAlias(path);
             Log.d("Tuan", encryptFile.toString());
 
@@ -62,9 +65,13 @@ public class AddFileToEncryptTask extends AsyncTask<Uri, Void, List<EncryptFile>
     @Override
     protected void onPostExecute(List<EncryptFile> files) {
         Toast.makeText(context, "Đã mã hoá thành công " + files.size() + " file!", Toast.LENGTH_SHORT).show();
-        for (EncryptFile f: files) {
+        List<EncryptFile> encryptFiles = FileFragment.getEncryptFileList();
+        for (EncryptFile f : files) {
             if (f.getImage() == true) {
                 new AddImageToViewTask().execute(f);
+            } else {
+                encryptFiles.add(f);
+                FileFragment.setEncryptFileList(encryptFiles);
             }
         }
     }

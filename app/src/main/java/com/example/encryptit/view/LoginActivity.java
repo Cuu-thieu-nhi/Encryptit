@@ -11,8 +11,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.encryptit.R;
-import com.example.encryptit.database.UserDAO;
 import com.example.encryptit.cryptography.MD5Hash;
+import com.example.encryptit.database.UserDAO;
 import com.example.encryptit.model.User;
 
 public class LoginActivity extends AppCompatActivity {
@@ -39,8 +39,6 @@ public class LoginActivity extends AppCompatActivity {
                 if (pass.getText().toString() != null) {
                     // lấy mã md5 của mật khẩu đã nhập, nếu trùng với mã nd5 được lưu trong cơ sở dữ liệu thì có nghĩa là đúng mật khẩu
                     String hashedPass = MD5Hash.md5(pass.getText().toString());
-                    Log.d("Tuan", hashedPass);
-                    Log.d("Tuan", user.getPassWord());
                     if (hashedPass.equals(user.getPassWord())) {
                         Log.d("Tuan", "equal");
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);

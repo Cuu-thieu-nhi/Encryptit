@@ -19,7 +19,7 @@ import java.util.List;
 
 public class ImageRecycleViewAdapter extends RecyclerView.Adapter<ImageRecycleViewAdapter.ViewHolder> {
     Context context;
-    private IClickImageListener iClickImageListener;
+    private final IClickImageListener iClickImageListener;
     private List<TempImageToView> decryptedImages;
 
     public ImageRecycleViewAdapter(List<TempImageToView> decryptedImages, Context context, IClickImageListener iClickImageListener) {
@@ -43,8 +43,7 @@ public class ImageRecycleViewAdapter extends RecyclerView.Adapter<ImageRecycleVi
     @Override
     public void onBindViewHolder(@NonNull ImageRecycleViewAdapter.ViewHolder holder, int position) {
         final TempImageToView encryptedImage = decryptedImages.get(position);
-        if (encryptedImage == null)
-            return;
+        if (encryptedImage == null) return;
         Glide.with(context).load(encryptedImage.getData()).into(holder.imageView);
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override

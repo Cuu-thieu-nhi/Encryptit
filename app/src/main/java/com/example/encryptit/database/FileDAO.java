@@ -2,7 +2,6 @@ package com.example.encryptit.database;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.util.Log;
 
 import com.example.encryptit.model.EncryptFile;
 
@@ -90,79 +89,16 @@ public class FileDAO {
         return encryptFiles;
     }
 
-
-
-
-
-//    public List<EncryptFile> getAllImages() {
-//        List<EncryptFile> encryptFiles = new ArrayList<>();
-//
-//        try {
-//            open();
-//
-//            String[] projection = {
-//                    DatabaseHelper.COLUMN_FILE_PATH,
-//                    DatabaseHelper.COLUMN_FILE_NAME_AND_EXTENSION,
-//                    DatabaseHelper.COLUMN_FILE_NAME,
-//                    DatabaseHelper.COLUMN_FILE_EXTENSION,
-//                    DatabaseHelper. COLUMN_FILE_LOCATION,
-//                    DatabaseHelper.COLUMN_ALIAS,
-//                    DatabaseHelper.COLUMN_IS_IMAGE
-//            };
-//            String selection = DatabaseHelper.COLUMN_IS_IMAGE + "=?";
-//            String[] selectionArgs = { "1" };
-//            String sortOrder = null;
-//
-//            Cursor cursor = imageDb.query(
-//                    DatabaseHelper.TABLE_FILE,  // table name
-//                    projection,                 // columns to return
-//                    selection,                  // columns for WHERE clause
-//                    selectionArgs,              // values for WHERE clause
-//                    null,                       // don't group the rows
-//                    null,                       // don't filter by row groups
-//                    sortOrder                   // sort order
-//            );
-//
-//            while (cursor.moveToNext()) {
-//                EncryptFile encryptFile = new EncryptFile();
-//                encryptFile.setFilePath(cursor.getString(1));
-//                encryptFile.setFileNameAndExtension(cursor.getString(2));
-//                encryptFile.setFileName(cursor.getString(3));
-//                encryptFile.setFileExtension(cursor.getString(4));
-//                encryptFile.setFileLocation(cursor.getString(5));
-//                encryptFile.setAlias(cursor.getString(6));
-//                encryptFile.setImage(cursor.getInt(7) == 1);
-//                encryptFiles.add(encryptFile);
-//            }
-//        } catch (SQLException e) {
-//            Log.e("FileDAO", "Error getting all files", e);
-//        } finally {
-//            close();
-//        }
-//        return encryptFiles;
-//    }
-
     public List<EncryptFile> getAllFiles() {
+        open();
         List<EncryptFile> encryptFiles = new ArrayList<>();
 
-        try {
-            open();
+        String selectQuery = "SELECT  * FROM " + DatabaseHelper.TABLE_FILE + " WHERE is_image = 0;";
 
-            String[] projection = {DatabaseHelper.COLUMN_FILE_PATH, DatabaseHelper.COLUMN_FILE_NAME_AND_EXTENSION, DatabaseHelper.COLUMN_FILE_NAME, DatabaseHelper.COLUMN_FILE_EXTENSION, DatabaseHelper.COLUMN_FILE_LOCATION, DatabaseHelper.COLUMN_ALIAS, DatabaseHelper.COLUMN_IS_IMAGE};
-            String selection = DatabaseHelper.COLUMN_IS_IMAGE + "=?";
-            String[] selectionArgs = {"0"};
-            String sortOrder = null;
+        Cursor cursor = db.rawQuery(selectQuery, null);
 
-            Cursor cursor = db.query(DatabaseHelper.TABLE_FILE,  // table name
-                    projection,                 // columns to return
-                    selection,                  // columns for WHERE clause
-                    selectionArgs,              // values for WHERE clause
-                    null,                       // don't group the rows
-                    null,                       // don't filter by row groups
-                    sortOrder                   // sort order
-            );
-
-            while (cursor.moveToNext()) {
+        if (cursor.moveToFirst()) {
+            do {
                 EncryptFile encryptFile = new EncryptFile();
                 encryptFile.setFilePath(cursor.getString(1));
                 encryptFile.setFileNameAndExtension(cursor.getString(2));
@@ -170,18 +106,13 @@ public class FileDAO {
                 encryptFile.setFileExtension(cursor.getString(4));
                 encryptFile.setFileLocation(cursor.getString(5));
                 encryptFile.setAlias(cursor.getString(6));
-                if (cursor.getInt(7) == 1)
-                    encryptFile.setImage(true);
-                else encryptFile.setImage(false);
+                encryptFile.setImage(cursor.getInt(7) == 0);
                 encryptFiles.add(encryptFile);
-            }
-        } catch (SQLException e) {
-            Log.e("FileDAO", "Error getting all files", e);
-        } finally {
-            close();
+            } while (cursor.moveToNext());
         }
+        cursor.close();
+        close();
         return encryptFiles;
     }
-
 
 }

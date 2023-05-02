@@ -32,8 +32,8 @@ public class FileRecycleViewAdapter extends RecyclerView.Adapter<FileRecycleView
     @NonNull
     @Override
     public FileRecycleViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_single_image, parent, false);
-        return new FileRecycleViewAdapter.ViewHolder(view);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_single_file, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override

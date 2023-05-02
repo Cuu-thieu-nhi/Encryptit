@@ -42,7 +42,17 @@ public class UserDAO {
         values.put(COLUMN_HINT, user.getHint());
         db.insert(TABLE_NAME, null, values);
         close();
+    }
 
+    public int updateUser(long id, User user) {
+        open();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USERNAME, user.getUserName());
+        values.put(COLUMN_PASSWORD, user.getPassWord());
+        values.put(COLUMN_HINT, user.getHint());
+        int rowsUpdated = db.update(TABLE_NAME, values, COLUMN_ID_1 + "=?", new String[]{String.valueOf(id)});
+        close();
+        return rowsUpdated;
     }
 
     public User getUser(long id) {

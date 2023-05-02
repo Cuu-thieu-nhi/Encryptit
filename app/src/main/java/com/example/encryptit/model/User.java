@@ -42,10 +42,6 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "User{" +
-                "userName='" + userName + '\'' +
-                ", passWord='" + passWord + '\'' +
-                ", hint='" + hint + '\'' +
-                '}';
+        return "User{" + "userName='" + userName + '\'' + ", passWord='" + passWord + '\'' + ", hint='" + hint + '\'' + '}';
     }
 }

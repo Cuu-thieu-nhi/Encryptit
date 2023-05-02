@@ -5,9 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.encryptit.R;
 import com.example.encryptit.adapter.ImageRecycleViewAdapter;
-import com.example.encryptit.background.AddImageToViewTask;
 import com.example.encryptit.background.AddImageToDecryptTask;
+import com.example.encryptit.background.AddImageToViewTask;
 import com.example.encryptit.database.FileDAO;
 import com.example.encryptit.mInterface.IClickImageListener;
 import com.example.encryptit.model.EncryptFile;
@@ -56,8 +54,6 @@ public class ImageFragment extends Fragment {
     }
 
 
-
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,9 +64,8 @@ public class ImageFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.image_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_image, container, false);
         recyclerView = view.findViewById(R.id.recycleViewImageGallery);
-//        textView = view.findViewById(R.id.totalPhoto);
         buttonDecryptAll = view.findViewById(R.id.decryptAll);
 
         adapter = new ImageRecycleViewAdapter(imagesToView, getContext(), new IClickImageListener() {
@@ -90,7 +85,7 @@ public class ImageFragment extends Fragment {
         buttonDecryptAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for (TempImageToView t: imagesToView) {
+                for (TempImageToView t : imagesToView) {
                     AddImageToDecryptTask task = new AddImageToDecryptTask(getContext());
                     task.execute(t);
                 }

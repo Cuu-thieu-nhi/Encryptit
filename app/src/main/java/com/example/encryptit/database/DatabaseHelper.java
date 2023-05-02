@@ -42,22 +42,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String query1 =
-                "CREATE TABLE " + TABLE_USER + " (" +
-                        COLUMN_ID_1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        COLUMN_USERNAME + " TEXT, " +
-                        COLUMN_PASSWORD + " TEXT, " +
-                        COLUMN_HINT + " TEXT" + ");";
-        String query2 =
-                "CREATE TABLE " + TABLE_FILE + " (" +
-                        COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        COLUMN_FILE_PATH + " TEXT, " +
-                        COLUMN_FILE_NAME_AND_EXTENSION + " TEXT, " +
-                        COLUMN_FILE_NAME + " TEXT, " +
-                        COLUMN_FILE_EXTENSION + " TEXT, " +
-                        COLUMN_FILE_LOCATION + " TEXT, " +
-                        COLUMN_ALIAS + " TEXT, " +
-                        COLUMN_IS_IMAGE + " INTEGER);";
+        String query1 = "CREATE TABLE " + TABLE_USER + " (" + COLUMN_ID_1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_USERNAME + " TEXT, " + COLUMN_PASSWORD + " TEXT, " + COLUMN_HINT + " TEXT" + ");";
+        String query2 = "CREATE TABLE " + TABLE_FILE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_FILE_PATH + " TEXT, " + COLUMN_FILE_NAME_AND_EXTENSION + " TEXT, " + COLUMN_FILE_NAME + " TEXT, " + COLUMN_FILE_EXTENSION + " TEXT, " + COLUMN_FILE_LOCATION + " TEXT, " + COLUMN_ALIAS + " TEXT, " + COLUMN_IS_IMAGE + " INTEGER);";
         db.execSQL(query1);
         db.execSQL(query2);
     }
