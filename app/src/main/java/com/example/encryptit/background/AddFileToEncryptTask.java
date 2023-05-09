@@ -11,7 +11,7 @@ import com.example.encryptit.cryptography.MyKeyStore;
 import com.example.encryptit.model.EncryptFile;
 import com.example.encryptit.utils.GetFileName;
 import com.example.encryptit.utils.GetPathFromUri;
-import com.example.encryptit.view.MainActivity;
+import com.example.encryptit.view.app.MainActivity;
 import com.example.encryptit.view.fragment.FileFragment;
 
 import java.util.ArrayList;
@@ -21,9 +21,11 @@ import javax.crypto.SecretKey;
 
 public class AddFileToEncryptTask extends AsyncTask<Uri, Void, List<EncryptFile>> {
     private final Context context;
+    private final String email;
 
-    public AddFileToEncryptTask(Context context) {
+    public AddFileToEncryptTask(Context context, String email) {
         this.context = context;
+        this.email = email;
     }
 
     @Override
@@ -43,10 +45,11 @@ public class AddFileToEncryptTask extends AsyncTask<Uri, Void, List<EncryptFile>
             encryptFile.setFileName(name);
             encryptFile.setFileExtension(extension);
             encryptFile.setFileLocation(location);
-
             encryptFile.setImage(extension.equals("jpg") || extension.equals("png") || extension.equals("bmp") || extension.equals("webp"));
-
             encryptFile.setAlias(path);
+            encryptFile.setEmail(email);
+
+
             Log.d("Tuan", encryptFile.toString());
 
             MainActivity.db.addFile(encryptFile);

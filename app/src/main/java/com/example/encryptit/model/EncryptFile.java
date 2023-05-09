@@ -10,11 +10,12 @@ public class EncryptFile implements Serializable {
     private String fileLocation; // /storage/emulated/0/Download
     private String alias;
     private Boolean isImage;
+    private String email;
 
     public EncryptFile() {
     }
 
-    public EncryptFile(String filePath, String fileNameAndExtension, String fileName, String fileExtension, String fileLocation, String alias, Boolean isImage) {
+    public EncryptFile(String filePath, String fileNameAndExtension, String fileName, String fileExtension, String fileLocation, String alias, Boolean isImage, String email) {
         this.filePath = filePath;
         this.fileNameAndExtension = fileNameAndExtension;
         this.fileName = fileName;
@@ -22,6 +23,15 @@ public class EncryptFile implements Serializable {
         this.fileLocation = fileLocation;
         this.alias = alias;
         this.isImage = isImage;
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getFilePath() {
@@ -83,6 +93,6 @@ public class EncryptFile implements Serializable {
 
     @Override
     public String toString() {
-        return "EncryptFile{" + "filePath='" + filePath + '\'' + ", fileNameAndExtension='" + fileNameAndExtension + '\'' + ", fileName='" + fileName + '\'' + ", fileExtension='" + fileExtension + '\'' + ", fileLocation='" + fileLocation + '\'' + ", alias='" + alias + '\'' + ", isImage=" + isImage + '}';
+        return "EncryptFile{" + "filePath='" + filePath + '\'' + ", fileNameAndExtension='" + fileNameAndExtension + '\'' + ", fileName='" + fileName + '\'' + ", fileExtension='" + fileExtension + '\'' + ", fileLocation='" + fileLocation + '\'' + ", alias='" + alias + '\'' + ", isImage=" + isImage + ", email='" + email + '\'' + '}';
     }
 }

@@ -3,9 +3,9 @@
     <item
         android:id="@+id/image_frag"
         android:icon="@drawable/baseline_image_24"
-        android:title="Ảnh" />
+        android:title="Pictures" />
     <item
         android:id="@+id/file_frag"
         android:icon="@drawable/baseline_file_24"
-        android:title="File" />
+        android:title="Files" />
 </menu>

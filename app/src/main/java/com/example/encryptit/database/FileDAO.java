@@ -51,6 +51,7 @@ public class FileDAO {
         values.put(DatabaseHelper.COLUMN_FILE_LOCATION, encryptFile.getFileLocation());
         values.put(DatabaseHelper.COLUMN_ALIAS, encryptFile.getAlias());
         values.put(DatabaseHelper.COLUMN_IS_IMAGE, encryptFile.getImage() ? 1 : 0);
+        values.put(DatabaseHelper.COLUMN_EMAIL, encryptFile.getEmail());
 
         db.insert(DatabaseHelper.TABLE_FILE, null, values);
         close();
@@ -63,11 +64,11 @@ public class FileDAO {
         close();
     }
 
-    public List<EncryptFile> getAllImages() {
+    public List<EncryptFile> getAllImages(String email) {
         open();
         List<EncryptFile> encryptFiles = new ArrayList<>();
 
-        String selectQuery = "SELECT  * FROM " + DatabaseHelper.TABLE_FILE + " WHERE is_image = 1;";
+        String selectQuery = "SELECT  * FROM " + DatabaseHelper.TABLE_FILE + " WHERE is_image = 1 AND email = '" + email + "';";
 
         Cursor cursor = db.rawQuery(selectQuery, null);
 
@@ -81,6 +82,7 @@ public class FileDAO {
                 encryptFile.setFileLocation(cursor.getString(5));
                 encryptFile.setAlias(cursor.getString(6));
                 encryptFile.setImage(cursor.getInt(7) == 1);
+                encryptFile.setEmail(cursor.getString(8));
                 encryptFiles.add(encryptFile);
             } while (cursor.moveToNext());
         }
@@ -89,11 +91,11 @@ public class FileDAO {
         return encryptFiles;
     }
 
-    public List<EncryptFile> getAllFiles() {
+    public List<EncryptFile> getAllFiles(String email) {
         open();
         List<EncryptFile> encryptFiles = new ArrayList<>();
 
-        String selectQuery = "SELECT  * FROM " + DatabaseHelper.TABLE_FILE + " WHERE is_image = 0;";
+        String selectQuery = "SELECT  * FROM " + DatabaseHelper.TABLE_FILE + " WHERE is_image = 0 AND email = '" + email + "';";
 
         Cursor cursor = db.rawQuery(selectQuery, null);
 
@@ -107,6 +109,7 @@ public class FileDAO {
                 encryptFile.setFileLocation(cursor.getString(5));
                 encryptFile.setAlias(cursor.getString(6));
                 encryptFile.setImage(cursor.getInt(7) == 0);
+                encryptFile.setEmail(cursor.getString(8));
                 encryptFiles.add(encryptFile);
             } while (cursor.moveToNext());
         }

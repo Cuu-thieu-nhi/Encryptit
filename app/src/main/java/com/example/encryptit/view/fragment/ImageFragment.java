@@ -1,5 +1,7 @@
 package com.example.encryptit.view.fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,7 +23,9 @@ import com.example.encryptit.database.FileDAO;
 import com.example.encryptit.mInterface.IClickImageListener;
 import com.example.encryptit.model.EncryptFile;
 import com.example.encryptit.model.TempImageToView;
-import com.example.encryptit.view.ImageViewActivity;
+import com.example.encryptit.view.app.ImageViewActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +38,8 @@ public class ImageFragment extends Fragment {
     FileDAO imageDb;
     RecyclerView recyclerView;
     ImageButton buttonDecryptAll;
+    private FirebaseAuth auth;
+    private String email = "";
 
     public static List<EncryptFile> getEncryptedImages() {
         return encryptedImages;
@@ -57,13 +63,22 @@ public class ImageFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        imageDb = new FileDAO(getContext());
-        encryptedImages = imageDb.getAllImages();
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser != null)
+            email = currentUser.getEmail();
+
+        encryptedImages.clear();
+        imagesToView.clear();
+
+        imageDb = new FileDAO(getContext());
+        encryptedImages = imageDb.getAllImages(email);
+
         View view = inflater.inflate(R.layout.fragment_image, container, false);
         recyclerView = view.findViewById(R.id.recycleViewImageGallery);
         buttonDecryptAll = view.findViewById(R.id.decryptAll);
@@ -73,9 +88,28 @@ public class ImageFragment extends Fragment {
             public void onClickImageListener(TempImageToView encryptedImage) {
                 onClickGoToImageView(encryptedImage);
             }
+
+            @Override
+            public void onLongClickImageListener(List<TempImageToView> TempImageToView) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setMessage("Are you sure you want to decrypt these files? (" + TempImageToView.size() + " files)").setTitle("Confirmation").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        for (TempImageToView f : TempImageToView) {
+                            AddImageToDecryptTask task = new AddImageToDecryptTask(getContext());
+                            task.execute(f);
+                        }
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
         });
 
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 4));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         recyclerView.setAdapter(adapter);
 
         for (EncryptFile f : encryptedImages) {
@@ -100,6 +134,13 @@ public class ImageFragment extends Fragment {
     public void onResume() {
         super.onResume();
         setImagesToView(imagesToView);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        encryptedImages.clear();
+        imagesToView.clear();
     }
 
     private void onClickGoToImageView(TempImageToView encryptedImage) {

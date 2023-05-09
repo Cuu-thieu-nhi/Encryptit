@@ -26,6 +26,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ALIAS = "alias";
     public static final String COLUMN_IS_IMAGE = "is_image";
 
+    public static final String COLUMN_EMAIL = "email";
 
     static {
         try {
@@ -43,7 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String query1 = "CREATE TABLE " + TABLE_USER + " (" + COLUMN_ID_1 + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_USERNAME + " TEXT, " + COLUMN_PASSWORD + " TEXT, " + COLUMN_HINT + " TEXT" + ");";
-        String query2 = "CREATE TABLE " + TABLE_FILE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_FILE_PATH + " TEXT, " + COLUMN_FILE_NAME_AND_EXTENSION + " TEXT, " + COLUMN_FILE_NAME + " TEXT, " + COLUMN_FILE_EXTENSION + " TEXT, " + COLUMN_FILE_LOCATION + " TEXT, " + COLUMN_ALIAS + " TEXT, " + COLUMN_IS_IMAGE + " INTEGER);";
+        String query2 = "CREATE TABLE " + TABLE_FILE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_FILE_PATH + " TEXT, " + COLUMN_FILE_NAME_AND_EXTENSION + " TEXT, " + COLUMN_FILE_NAME + " TEXT, " + COLUMN_FILE_EXTENSION + " TEXT, " + COLUMN_FILE_LOCATION + " TEXT, " + COLUMN_ALIAS + " TEXT, " + COLUMN_IS_IMAGE + " INTEGER, " + COLUMN_EMAIL + " TEXT);";
         db.execSQL(query1);
         db.execSQL(query2);
     }

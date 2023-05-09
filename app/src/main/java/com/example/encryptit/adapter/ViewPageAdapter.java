@@ -25,8 +25,6 @@ public class ViewPageAdapter extends FragmentStatePagerAdapter {
                 return new ImageFragment();
             case 1:
                 return new FileFragment();
-//            case 2:
-//                return new AccountFragment();
             default:
                 return new ImageFragment();
         }

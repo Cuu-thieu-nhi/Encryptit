@@ -8,8 +8,8 @@ import android.util.Log;
 import com.example.encryptit.cryptography.MyEncrypter;
 import com.example.encryptit.cryptography.MyKeyStore;
 import com.example.encryptit.model.TempImageToView;
-import com.example.encryptit.view.ImageViewActivity;
-import com.example.encryptit.view.MainActivity;
+import com.example.encryptit.view.app.ImageViewActivity;
+import com.example.encryptit.view.app.MainActivity;
 import com.example.encryptit.view.fragment.ImageFragment;
 
 import java.util.List;

@@ -1,31 +1,41 @@
 package com.example.encryptit.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.encryptit.R;
+import com.example.encryptit.mInterface.IClickFileListener;
 import com.example.encryptit.model.EncryptFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FileRecycleViewAdapter extends RecyclerView.Adapter<FileRecycleViewAdapter.ViewHolder> {
+    private final IClickFileListener iClickFileListener;
+    private final List<EncryptFile> selectedFiles = new ArrayList<>();
     Context context;
     private List<EncryptFile> files;
 
-    public FileRecycleViewAdapter(List<EncryptFile> files, Context context) {
+    public FileRecycleViewAdapter(List<EncryptFile> files, Context context, IClickFileListener iClickFileListener) {
         this.files = files;
         this.context = context;
+        this.iClickFileListener = iClickFileListener;
     }
 
     public void setFiles(List<EncryptFile> files) {
         this.files = files;
+        selectedFiles.clear();
         notifyDataSetChanged();
     }
 
@@ -36,10 +46,28 @@ public class FileRecycleViewAdapter extends RecyclerView.Adapter<FileRecycleView
         return new ViewHolder(view);
     }
 
+    @SuppressLint("RecyclerView")
     @Override
-    public void onBindViewHolder(@NonNull FileRecycleViewAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final EncryptFile f = files.get(position);
+        boolean isSelected = selectedFiles.contains(f);
+        holder.setSelected(isSelected);
+
+        if (isSelected) {
+            int color = ContextCompat.getColor(context, R.color.file_selected);
+            holder.linearLayout.setBackgroundColor(color);
+            Log.d("FileRecycleViewAdapter", "onClick: un-select to select " + position + " " + holder.getAdapterPosition() + " " + holder.linearLayout.getBackground());
+
+        } else {
+            int color = ContextCompat.getColor(context, R.color.white);
+            holder.linearLayout.setBackgroundColor(color);
+            Log.d("FileRecycleViewAdapter", "onClick: select to un-select " + position + " " + holder.getAdapterPosition() + " " + holder.linearLayout.getBackground());
+        }
+
+
+
         if (f == null) return;
+
         String ex = f.getFileExtension();
         switch (ex) {
             case "doc":
@@ -90,7 +118,39 @@ public class FileRecycleViewAdapter extends RecyclerView.Adapter<FileRecycleView
                 break;
         }
         holder.textView.setText(f.getFileNameAndExtension());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (holder.isSelected() == null) holder.setSelected(false);
+
+                boolean isSelected = !holder.isSelected();
+                holder.setSelected(isSelected);
+                if (isSelected) {
+                    int color = ContextCompat.getColor(context, R.color.file_selected);
+                    selectedFiles.add(files.get(position));
+                    holder.linearLayout.setBackgroundColor(color);
+                    Log.d("FileRecycleViewAdapter", "onClick: un-select to select " + position + " " + holder.getAdapterPosition() + " " + holder.linearLayout.getBackground());
+
+                } else {
+                    int color = ContextCompat.getColor(context, R.color.white);
+                    selectedFiles.remove(files.get(position));
+                    holder.linearLayout.setBackgroundColor(color);
+                    Log.d("FileRecycleViewAdapter", "onClick: select to un-select " + position + " " + holder.getAdapterPosition() + " " + holder.linearLayout.getBackground());
+                }
+            }
+        });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (holder.isSelected() && !selectedFiles.isEmpty()) {
+                    iClickFileListener.onLongClickImageListener(selectedFiles);
+                }
+                return true;
+            }
+        });
     }
+
 
     @Override
     public int getItemCount() {
@@ -101,13 +161,25 @@ public class FileRecycleViewAdapter extends RecyclerView.Adapter<FileRecycleView
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        LinearLayout linearLayout;
         ImageView imageView;
         TextView textView;
+        Boolean selected;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            selected = false;
+            linearLayout = itemView.findViewById(R.id.file_linear_layout);
             imageView = itemView.findViewById(R.id.imageView);
             textView = itemView.findViewById(R.id.textVieww);
+        }
+
+        public Boolean isSelected() {
+            return selected;
+        }
+
+        public void setSelected(Boolean selected) {
+            this.selected = selected;
         }
     }
 }

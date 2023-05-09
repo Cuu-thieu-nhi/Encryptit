@@ -6,7 +6,7 @@ import android.util.Log;
 import com.example.encryptit.cryptography.MyEncrypter;
 import com.example.encryptit.cryptography.MyKeyStore;
 import com.example.encryptit.model.EncryptFile;
-import com.example.encryptit.view.MainActivity;
+import com.example.encryptit.view.app.MainActivity;
 import com.example.encryptit.view.fragment.FileFragment;
 
 import java.util.List;
@@ -14,7 +14,6 @@ import java.util.List;
 import javax.crypto.SecretKey;
 
 public class AddFileToDecryptTask extends AsyncTask<EncryptFile, Void, List<EncryptFile>> {
-
     @Override
     protected List<EncryptFile> doInBackground(EncryptFile... encryptFiles) {
         List<EncryptFile> encryptFilesList = FileFragment.getEncryptFileList();

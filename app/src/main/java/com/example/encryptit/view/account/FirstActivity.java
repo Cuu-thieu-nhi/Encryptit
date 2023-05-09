@@ -1,4 +1,4 @@
-package com.example.encryptit.view;
+package com.example.encryptit.view.account;
 
 import android.Manifest;
 import android.content.Intent;
@@ -25,7 +25,7 @@ public class FirstActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.old_activity_main);
 
         try {
             Log.d("Tuan", DatabasePasswordManager.encrypt("kieuthilanhuong"));
@@ -45,7 +45,7 @@ public class FirstActivity extends AppCompatActivity {
         switch (requestCode) {
             case 1:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Intent intent = new Intent(FirstActivity.this, LogInOrSignUpActivity.class);
+                    Intent intent = new Intent(FirstActivity.this, LoginActivity.class);
                     startActivity(intent);
                 } else {
                     Toast.makeText(FirstActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
