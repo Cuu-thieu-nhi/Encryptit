@@ -10,8 +10,10 @@
         android:id="@+id/profile_image"
         android:layout_width="96dp"
         android:layout_height="96dp"
-        android:src="@drawable/logo"
         android:background="@drawable/circle_background"
+        android:src="@drawable/google"
+        android:scaleType="fitCenter"
+
         android:padding="8dp"/>
 
     <TextView
@@ -20,7 +22,16 @@
         android:layout_height="wrap_content"
         android:text="example@example.com"
         android:textColor="#FFF"
-        android:textSize="18sp"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/roboto" />
+
+    <TextView
+        android:id="@+id/profile_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="google.com.vn"
+        android:textColor="#FFF"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/roboto" />
 

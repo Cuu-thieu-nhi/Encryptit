@@ -6,9 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -21,7 +18,7 @@ import com.example.encryptit.model.EncryptFile;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileRecycleViewAdapter extends RecyclerView.Adapter<FileRecycleViewAdapter.ViewHolder> {
+public class FileRecycleViewAdapter extends RecyclerView.Adapter<FileViewHolder> {
     private final IClickFileListener iClickFileListener;
     private final List<EncryptFile> selectedFiles = new ArrayList<>();
     Context context;
@@ -41,14 +38,14 @@ public class FileRecycleViewAdapter extends RecyclerView.Adapter<FileRecycleView
 
     @NonNull
     @Override
-    public FileRecycleViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public FileViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_single_file, parent, false);
-        return new ViewHolder(view);
+        return new FileViewHolder(view);
     }
 
     @SuppressLint("RecyclerView")
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull FileViewHolder holder, int position) {
         final EncryptFile f = files.get(position);
         boolean isSelected = selectedFiles.contains(f);
         holder.setSelected(isSelected);
@@ -63,7 +60,6 @@ public class FileRecycleViewAdapter extends RecyclerView.Adapter<FileRecycleView
             holder.linearLayout.setBackgroundColor(color);
             Log.d("FileRecycleViewAdapter", "onClick: select to un-select " + position + " " + holder.getAdapterPosition() + " " + holder.linearLayout.getBackground());
         }
-
 
 
         if (f == null) return;
@@ -158,28 +154,5 @@ public class FileRecycleViewAdapter extends RecyclerView.Adapter<FileRecycleView
             return files.size();
         }
         return 0;
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout linearLayout;
-        ImageView imageView;
-        TextView textView;
-        Boolean selected;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            selected = false;
-            linearLayout = itemView.findViewById(R.id.file_linear_layout);
-            imageView = itemView.findViewById(R.id.imageView);
-            textView = itemView.findViewById(R.id.textVieww);
-        }
-
-        public Boolean isSelected() {
-            return selected;
-        }
-
-        public void setSelected(Boolean selected) {
-            this.selected = selected;
-        }
     }
 }

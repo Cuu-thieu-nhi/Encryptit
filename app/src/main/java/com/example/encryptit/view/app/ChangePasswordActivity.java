@@ -1,7 +1,7 @@
 package com.example.encryptit.view.app;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -72,9 +72,11 @@ public class ChangePasswordActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
+                                        progressBar.setVisibility(View.INVISIBLE);
                                         Toast.makeText(getApplication(), "Change password successfully!", Toast.LENGTH_SHORT).show();
                                         return;
                                     } else {
+                                        progressBar.setVisibility(View.INVISIBLE);
                                         Toast.makeText(getApplication(), "Error, please try again!", Toast.LENGTH_SHORT).show();
                                         return;
                                     }
@@ -92,14 +94,14 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     }
                 });
 
-
                 user.updatePassword(newPassword).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            // Mật khẩu đã được đặt lại thành công
+                            finish();
                         } else {
-                            // Đã xảy ra lỗi khi đặt lại mật khẩu
+                            Toast.makeText(getApplication(), "Error, please try again!", Toast.LENGTH_SHORT).show();
+                            finish();
                         }
                     }
                 });

@@ -4,10 +4,12 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +28,7 @@ import com.example.encryptit.model.TempImageToView;
 import com.example.encryptit.view.app.ImageViewActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +39,7 @@ public class ImageFragment extends Fragment {
     public static List<TempImageToView> imagesToView = new ArrayList<>();
     public static ImageRecycleViewAdapter adapter;
     FileDAO imageDb;
+    ProgressBar progressBar;
     RecyclerView recyclerView;
     ImageButton buttonDecryptAll;
     private FirebaseAuth auth;
@@ -59,7 +63,6 @@ public class ImageFragment extends Fragment {
         adapter.notifyDataSetChanged();
     }
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,10 +71,9 @@ public class ImageFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        auth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if (currentUser != null)
-            email = currentUser.getEmail();
+        getCurrentUserAndEmail();
+
+        Log.d("Email-image", "onCreate: " + email);
 
         encryptedImages.clear();
         imagesToView.clear();
@@ -82,6 +84,7 @@ public class ImageFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_image, container, false);
         recyclerView = view.findViewById(R.id.recycleViewImageGallery);
         buttonDecryptAll = view.findViewById(R.id.decryptAll);
+        progressBar = view.findViewById(R.id.progressBar);
 
         adapter = new ImageRecycleViewAdapter(imagesToView, getContext(), new IClickImageListener() {
             @Override
@@ -149,5 +152,27 @@ public class ImageFragment extends Fragment {
         bundle.putSerializable("object_image", encryptedImage.getFile());
         intent.putExtras(bundle);
         this.startActivity(intent);
+    }
+
+    public void getCurrentUserAndEmail() {
+        email = "";
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        if (user != null) {
+            email = user.getEmail();
+            if (email != null) {
+                List<? extends UserInfo> providerData = user.getProviderData();
+                for (UserInfo userInfo : providerData) {
+                    String providerId = userInfo.getProviderId();
+                    if (providerId.equals("firebase")) {
+                        email += ".firebase";
+                    } else if (providerId.equals("google.com")) {
+                        email += ".google";
+                    } else if (providerId.equals("facebook.com")) {
+                        email += ".facebook";
+                    }
+                }
+            }
+        }
     }
 }

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
@@ -27,6 +28,7 @@ import com.example.encryptit.model.EncryptFile;
 import com.example.encryptit.utils.MySort;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,7 @@ public class FileFragment extends Fragment {
     ImageButton bt;
     Spinner spinner;
     RecyclerView recyclerView;
+    ProgressBar progressBar;
     FileDAO db;
     private FirebaseAuth auth;
     private String email = "";
@@ -55,15 +58,14 @@ public class FileFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        auth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if (currentUser != null) email = currentUser.getEmail();
+        getCurrentUserAndEmail();
+
+        Log.d("Email-file", "onCreate: " + email);
 
         encryptFileList.clear();
 
@@ -77,6 +79,7 @@ public class FileFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_file, container, false);
         bt = view.findViewById(R.id.decryptAll);
+        progressBar = view.findViewById(R.id.progressBar);
 
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, new String[]{"Sắp xếp mặc định", "Sắp xếp theo tên", "Sắp xếp theo kiểu"});
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -159,4 +162,27 @@ public class FileFragment extends Fragment {
         super.onDestroyView();
         encryptFileList.clear();
     }
+
+    public void getCurrentUserAndEmail() {
+        email = "";
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        if (user != null) {
+            email = user.getEmail();
+            if (email != null) {
+                List<? extends UserInfo> providerData = user.getProviderData();
+                for (UserInfo userInfo : providerData) {
+                    String providerId = userInfo.getProviderId();
+                    if (providerId.equals("firebase")) {
+                        email += ".firebase";
+                    } else if (providerId.equals("google.com")) {
+                        email += ".google";
+                    } else if (providerId.equals("facebook.com")) {
+                        email += ".facebook";
+                    }
+                }
+            }
+        }
+    }
 }
+

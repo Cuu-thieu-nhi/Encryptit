@@ -2,15 +2,16 @@ package com.example.encryptit.view.account;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.encryptit.R;
@@ -34,7 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private ProgressBar progressBar;
     private Button btnSignup, btnLogin, btnReset;
-    private Button loginWithGG, loginWithFB;
+    private ImageButton loginWithGG, loginWithFB;
     private  GoogleSignInOptions gso;
     private GoogleSignInClient googleSignInClient;
 
@@ -142,10 +143,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
+        progressBar.setVisibility(View.VISIBLE);
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         auth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
+                progressBar.setVisibility(View.GONE);
                 if (task.isSuccessful()) {
                     Log.d("LoginActivity", "signInWithCredential: success");
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);

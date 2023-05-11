@@ -21,7 +21,7 @@ import com.example.encryptit.model.TempImageToView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImageRecycleViewAdapter extends RecyclerView.Adapter<ImageRecycleViewAdapter.ViewHolder> {
+public class ImageRecycleViewAdapter extends RecyclerView.Adapter<ImageViewHolder> {
     private final IClickImageListener iClickImageListener;
     private final List<TempImageToView> selectedFiles = new ArrayList<>();
     Context context;
@@ -41,13 +41,13 @@ public class ImageRecycleViewAdapter extends RecyclerView.Adapter<ImageRecycleVi
 
     @NonNull
     @Override
-    public ImageRecycleViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_single_image, parent, false);
-        return new ViewHolder(view);
+        return new ImageViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ImageRecycleViewAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+    public void onBindViewHolder(@NonNull ImageViewHolder holder, @SuppressLint("RecyclerView") int position) {
         final TempImageToView encryptedImage = decryptedImages.get(position);
         if (encryptedImage == null) return;
 
@@ -109,27 +109,5 @@ public class ImageRecycleViewAdapter extends RecyclerView.Adapter<ImageRecycleVi
             return decryptedImages.size();
         }
         return 0;
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView;
-        ConstraintLayout relativeLayout;
-
-        Boolean selected;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            selected = false;
-            imageView = itemView.findViewById(R.id.image);
-            relativeLayout = itemView.findViewById(R.id.relative);
-        }
-
-        public Boolean isSelected() {
-            return selected;
-        }
-
-        public void setSelected(Boolean selected) {
-            this.selected = selected;
-        }
     }
 }

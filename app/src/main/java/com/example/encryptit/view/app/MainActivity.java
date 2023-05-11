@@ -1,11 +1,15 @@
 package com.example.encryptit.view.app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -40,30 +44,34 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static FileDAO db;
     Set<Uri> set = new LinkedHashSet<>();
     int id = 0;
-
-    private TextView userEmail;
+    private TextView userEmail, userType;
     private ImageView userAvatar;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
+    private Menu navigationMenu;
     private BottomNavigationView bottomNavigationView;
     private ViewPager viewPager;
     private FloatingActionButton floatingActionButton;
     private FirebaseAuth.AuthStateListener authListener;
-
+    private FirebaseUser user;
     private GoogleSignInOptions gso;
     private GoogleSignInClient googleSignInClient;
     private FirebaseAuth auth;
     private String email = "";
     private String avatar = "";
+    private String type = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,25 +81,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         db = new FileDAO(MainActivity.this);
         id = db.getMaxId();
 
-        auth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if (currentUser != null) email = currentUser.getEmail();
-        Log.d("MainActivity", "onCreate: " + email);
+        getCurrentUserAndEmail();
 
-        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("956161453122-ih8cb633chq7572h68fvinqtdph06frb.apps.googleusercontent.com")
-                .requestEmail().build();
+        Log.d("Email-main", "onCreate: " + email);
+
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken("956161453122-ih8cb633chq7572h68fvinqtdph06frb.apps.googleusercontent.com").requestEmail().build();
 
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
+
         drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-        userEmail = navigationView.getHeaderView(0).findViewById(R.id.profile_email);
-        userAvatar = navigationView.getHeaderView(0).findViewById(R.id.profile_image);
-        bottomNavigationView = findViewById(R.id.bottom_nav);
-        viewPager = findViewById(R.id.viewPager);
-        floatingActionButton = findViewById(R.id.floating_button);
-
         navigationView.setNavigationItemSelectedListener(this);
 
         toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -99,27 +99,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+
+        userEmail = navigationView.getHeaderView(0).findViewById(R.id.profile_email);
+        userAvatar = navigationView.getHeaderView(0).findViewById(R.id.profile_image);
+        userType = navigationView.getHeaderView(0).findViewById(R.id.profile_type);
+        bottomNavigationView = findViewById(R.id.bottom_nav);
+        viewPager = findViewById(R.id.viewPager);
+        floatingActionButton = findViewById(R.id.floating_button);
+
+
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("EncryPTIT");
+
+        navigationMenu = navigationView.getMenu();
 
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+                user = firebaseAuth.getCurrentUser();
                 if (user == null) {
                     startActivity(new Intent(MainActivity.this, LoginActivity.class));
                     finish();
                 } else {
                     email = user.getEmail();
-                    userEmail.setText(email);
+                    if (getUserName() != null) userEmail.setText(getUserName());
+                    else userEmail.setText(email);
 
-                    avatar = user.getPhotoUrl().toString();
-
-                    if (!avatar.equals("")) {
-                        RequestOptions requestOptions = new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL);
-
-                        Glide.with(MainActivity.this).load(avatar).apply(requestOptions).into(userAvatar);
+                    List<? extends UserInfo> providerData = user.getProviderData();
+                    for (UserInfo userInfo : providerData) {
+                        String providerId = userInfo.getProviderId();
+                        if (providerId.equals("firebase")) {
+                            type = "Firebase";
+                            enableOrDisableMenu(true);
+                            getAvatar();
+                        } else if (providerId.equals("google.com")) {
+                            type = "Google.com";
+                            enableOrDisableMenu(false);
+                            getAvatar();
+                        } else if (providerId.equals("facebook.com")) {
+                            type = "Facebook.com";
+                            enableOrDisableMenu(false);
+                            getAvatar();
+                        }
                     }
+                    userType.setText(type);
                 }
             }
         };
@@ -178,8 +201,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
             }
         });
-
-
     }
 
 
@@ -199,16 +220,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (currentFragmentPosition > 0) {
                 viewPager.setCurrentItem(currentFragmentPosition - 1);
             } else {
-                auth.signOut();
-                googleSignInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // Google Sign Out completed
-                    }
-                });
+                showExitDialog();
 
-                finish();
-                super.onBackPressed();
             }
         }
     }
@@ -216,6 +229,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        getCurrentUserAndEmail();
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
             if (data.getClipData() != null) {
                 int x = data.getClipData().getItemCount();
@@ -231,8 +245,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 AddFileToEncryptTask task = new AddFileToEncryptTask(MainActivity.this, email);
                 task.execute(fileUri);
             }
+            Toast.makeText(this, "Đã chọn " + set.size(), Toast.LENGTH_SHORT).show();
+        } else if (requestCode == 2) {
+            Toast.makeText(MainActivity.this, "Thanks for your response ╰(*°▽°*)╯", Toast.LENGTH_SHORT).show();
+        } else if (requestCode == 3) {
+            getAvatar();
+            email = user.getEmail();
+            if (getUserName() != null) userEmail.setText(getUserName());
+            else userEmail.setText(email);
         }
-        Toast.makeText(this, "Đã chọn " + set.size(), Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
@@ -250,14 +272,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-//        signOut();
-    }
-
-    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Intent intent;
         switch (item.getItemId()) {
             case R.id.nav_logout:
                 auth = FirebaseAuth.getInstance();
@@ -266,13 +282,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 finish();
                 break;
             case R.id.nav_changePass:
-                Intent intent = new Intent(MainActivity.this, ChangePasswordActivity.class);
+                intent = new Intent(MainActivity.this, ChangePasswordActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.nav_changeAvatar:
+                intent = new Intent(MainActivity.this, ChangeAvatarActivity.class);
+                startActivityForResult(intent, 3);
+                break;
+            case R.id.nav_guide:
+                break;
             case R.id.nav_feedback:
-
+                String recipientEmail = "dodanhtuandbnl@gmail.com";
+                String subject = "Feedback for Encryptit";
+                intent = new Intent(Intent.ACTION_SENDTO);
+                intent.setData(Uri.parse("mailto:" + recipientEmail));
+                intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, 2);
+                } else {
+                    Toast.makeText(MainActivity.this, "No email application found!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.nav_about:
+                showAboutDialog();
                 break;
         }
+
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -284,5 +319,88 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // Google Sign Out completed
             }
         });
+    }
+
+    private void showExitDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Xác nhận thoát ứng dụng");
+        builder.setMessage("Bạn có chắc muốn thoát ứng dụng?");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                auth.signOut();
+                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
+                GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(MainActivity.this, gso);
+                googleSignInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                    }
+                });
+                finish();
+            }
+        }).setNegativeButton("Quay lại", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.show();
+    }
+
+    private void showAboutDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View customView = inflater.inflate(R.layout.alertdialog_about, null);
+        builder.setView(customView);
+        builder.setCancelable(true);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void getCurrentUserAndEmail() {
+        email = "";
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        if (user != null) {
+            email = user.getEmail();
+            if (email != null) {
+                List<? extends UserInfo> providerData = user.getProviderData();
+                for (UserInfo userInfo : providerData) {
+                    String providerId = userInfo.getProviderId();
+                    if (providerId.equals("firebase")) {
+                        email += ".firebase";
+                    } else if (providerId.equals("google.com")) {
+                        email += ".google";
+                    } else if (providerId.equals("facebook.com")) {
+                        email += ".facebook";
+                    }
+                }
+            }
+        }
+    }
+
+    private void getAvatar() {
+        if (user != null) {
+            Uri photoUrl = user.getPhotoUrl();
+            if (photoUrl != null) {
+                avatar = user.getPhotoUrl().toString();
+                if (!avatar.equals("")) {
+                    RequestOptions requestOptions = new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL);
+                    Glide.with(MainActivity.this).load(avatar).apply(requestOptions).circleCrop().into(userAvatar);
+                }
+            }
+        }
+    }
+
+    private String getUserName() {
+        if (user != null) return user.getDisplayName();
+        return null;
+    }
+
+    public void enableOrDisableMenu(boolean check) {
+        MenuItem item1 = navigationMenu.findItem(R.id.nav_changePass);
+        item1.setEnabled(check).setVisible(check);
+        MenuItem item3 = navigationMenu.findItem(R.id.nav_changeAvatar);
+        item3.setEnabled(check).setVisible(check);
     }
 }

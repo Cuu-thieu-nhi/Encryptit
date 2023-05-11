@@ -9,29 +9,29 @@
                 android:title="Sign out" />
             <item
                 android:id="@+id/nav_changePass"
-                android:icon="@drawable/ic_logout"
+                android:icon="@drawable/ic_password"
                 android:title="Change password" />
             <item
-                android:id="@+id/nav_changeEmail"
-                android:icon="@drawable/ic_logout"
-                android:title="Change email" />
-            <item
                 android:id="@+id/nav_changeAvatar"
-                android:icon="@drawable/ic_logout"
-                android:title="Change email" />
+                android:icon="@drawable/ic_avatar"
+                android:title="Change avatar" />
         </menu>
     </item>
 
-    <item android:title="Contact">
+    <item android:title="App">
         <menu>
             <item
-                android:id="@+id/nav_about"
-                android:icon="@drawable/ic_about"
-                android:title="About" />
+                android:id="@+id/nav_guide"
+                android:icon="@drawable/ic_question"
+                android:title="User guide" />
             <item
                 android:id="@+id/nav_feedback"
                 android:icon="@drawable/ic_feedback"
                 android:title="Feedback" />
+            <item
+                android:id="@+id/nav_about"
+                android:icon="@drawable/ic_about"
+                android:title="About" />
         </menu>
 
     </item>

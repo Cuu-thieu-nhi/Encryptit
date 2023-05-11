@@ -2,6 +2,7 @@ package com.example.encryptit.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.util.Log;
 
 import com.example.encryptit.model.EncryptFile;
 
@@ -16,7 +17,6 @@ import java.util.List;
 public class FileDAO {
     private final DatabaseHelper dbHelper;
     private SQLiteDatabase db;
-
     public FileDAO(Context context) {
         dbHelper = new DatabaseHelper(context);
     }
@@ -54,8 +54,10 @@ public class FileDAO {
         values.put(DatabaseHelper.COLUMN_EMAIL, encryptFile.getEmail());
 
         db.insert(DatabaseHelper.TABLE_FILE, null, values);
-        close();
 
+        Log.d("Database", "add ok " + encryptFile.getEmail());
+
+        close();
     }
 
     public void deleteFile(EncryptFile encryptFile) {
@@ -84,6 +86,9 @@ public class FileDAO {
                 encryptFile.setImage(cursor.getInt(7) == 1);
                 encryptFile.setEmail(cursor.getString(8));
                 encryptFiles.add(encryptFile);
+
+                Log.d("Database", "read ok " + encryptFile.getEmail());
+
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -111,6 +116,9 @@ public class FileDAO {
                 encryptFile.setImage(cursor.getInt(7) == 0);
                 encryptFile.setEmail(cursor.getString(8));
                 encryptFiles.add(encryptFile);
+
+                Log.d("Database", "read ok " + encryptFile.getEmail());
+
             } while (cursor.moveToNext());
         }
         cursor.close();

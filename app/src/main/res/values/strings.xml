@@ -28,10 +28,11 @@
     <string name="btn_sign_out">Sign Out</string>
     <string name="lbl_forgot_password">Forgot password?</string>
     <string name="forgot_password_msg">We just need your registered Email Id to sent you password reset instructions.</string>
+    <string name="change_email_msg">Enter your new email. We will sent you email reset instructions.</string>
     <string name="navigation_drawer_open">Open Navigation Drawer</string>
     <string name="navigation_drawer_close">Close navigation Drawer</string>
 
-<!--    <string name="default_web_client_id">956161453122-ih8cb633chq7572h68fvinqtdph06frb.apps.googleusercontent.com</string>-->
+    <!--    <string name="default_web_client_id">956161453122-ih8cb633chq7572h68fvinqtdph06frb.apps.googleusercontent.com</string>-->
 
     <string name="facebook_app_id">595680772522614</string>
     <string name="fb_login_protocol_scheme">fb1234</string>
