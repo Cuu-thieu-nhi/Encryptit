@@ -18,6 +18,9 @@
         android:theme="@style/Theme.Material3.Light"
         tools:targetApi="31">
         <activity
+            android:name=".GuideActivity"
+            android:exported="false" />
+        <activity
             android:name=".ChangeAvatarActivity"
             android:exported="false" />
         <activity
@@ -72,7 +75,7 @@
             android:name=".view.app.ChangeEmailActivity"
             android:exported="false" />
         <activity
-            android:name=".view.app.ChangeAvatarActivity"
+            android:name=".view.app.ChangeAvatarAndUserNameActivity"
             android:exported="false" />
         <activity
             android:name=".view.account.FirstActivity"
@@ -83,6 +86,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.example.encryptit.view.app.GuideActivity" />
     </application>
 
 </manifest>

@@ -9,9 +9,6 @@ import com.example.encryptit.view.fragment.FileFragment;
 import com.example.encryptit.view.fragment.ImageFragment;
 
 public class ViewPageAdapter extends FragmentStatePagerAdapter {
-    public ViewPageAdapter(@NonNull FragmentManager fm) {
-        super(fm);
-    }
 
     public ViewPageAdapter(@NonNull FragmentManager fm, int behavior) {
         super(fm, behavior);

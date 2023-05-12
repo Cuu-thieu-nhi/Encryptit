@@ -1,11 +1,11 @@
 package com.example.encryptit.view.app;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,6 +48,7 @@ import com.google.firebase.auth.UserInfo;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -58,21 +59,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ImageView userAvatar;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
-    private NavigationView navigationView;
     private Menu navigationMenu;
     private BottomNavigationView bottomNavigationView;
     private ViewPager viewPager;
-    private FloatingActionButton floatingActionButton;
     private FirebaseAuth.AuthStateListener authListener;
     private FirebaseUser user;
-    private GoogleSignInOptions gso;
     private GoogleSignInClient googleSignInClient;
     private FirebaseAuth auth;
     private String email = "";
-    private String avatar = "";
     private String type = "";
 
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,17 +83,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Log.d("Email-main", "onCreate: " + email);
 
-        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken("956161453122-ih8cb633chq7572h68fvinqtdph06frb.apps.googleusercontent.com").requestEmail().build();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken("956161453122-ih8cb633chq7572h68fvinqtdph06frb.apps.googleusercontent.com").requestEmail().build();
 
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
 
         drawer = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -105,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         userType = navigationView.getHeaderView(0).findViewById(R.id.profile_type);
         bottomNavigationView = findViewById(R.id.bottom_nav);
         viewPager = findViewById(R.id.viewPager);
-        floatingActionButton = findViewById(R.id.floating_button);
+        FloatingActionButton floatingActionButton = findViewById(R.id.floating_button);
 
 
         ActionBar actionBar = getSupportActionBar();
@@ -113,53 +111,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigationMenu = navigationView.getMenu();
 
-        authListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                user = firebaseAuth.getCurrentUser();
-                if (user == null) {
-                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                    finish();
-                } else {
-                    email = user.getEmail();
-                    if (getUserName() != null) userEmail.setText(getUserName());
-                    else userEmail.setText(email);
+        authListener = firebaseAuth -> {
+            user = firebaseAuth.getCurrentUser();
+            if (user == null) {
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                finish();
+            } else {
+                email = user.getEmail();
+                if (getUserName() != null) userEmail.setText(getUserName());
+                else userEmail.setText(email);
 
-                    List<? extends UserInfo> providerData = user.getProviderData();
-                    for (UserInfo userInfo : providerData) {
-                        String providerId = userInfo.getProviderId();
-                        if (providerId.equals("firebase")) {
+                List<? extends UserInfo> providerData = user.getProviderData();
+                for (UserInfo userInfo : providerData) {
+                    String providerId = userInfo.getProviderId();
+                    switch (providerId) {
+                        case "firebase":
                             type = "Firebase";
                             enableOrDisableMenu(true);
                             getAvatar();
-                        } else if (providerId.equals("google.com")) {
+                            break;
+                        case "google.com":
                             type = "Google.com";
                             enableOrDisableMenu(false);
                             getAvatar();
-                        } else if (providerId.equals("facebook.com")) {
+                            break;
+                        case "facebook.com":
                             type = "Facebook.com";
                             enableOrDisableMenu(false);
                             getAvatar();
-                        }
+                            break;
                     }
-                    userType.setText(type);
                 }
+                userType.setText(type);
             }
         };
 
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setType("*/*");
-                String[] mimeTypes = {"image/jpeg", "image/png", "image/bmp", "image/webp", "application/*", "audio/*", "text/*", "video/*"};
-                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                }
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select file"), 1);
-            }
+        floatingActionButton.setOnClickListener(v -> {
+            Intent intent = new Intent();
+            intent.setType("*/*");
+            String[] mimeTypes = {"image/jpeg", "image/png", "image/bmp", "image/webp", "application/*", "audio/*", "text/*", "video/*"};
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent, "Select file"), 1);
         });
 
         ViewPageAdapter adapter = new ViewPageAdapter(getSupportFragmentManager(), FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
@@ -187,19 +181,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.image_frag:
-                        viewPager.setCurrentItem(0);
-                        break;
-                    case R.id.file_frag:
-                        viewPager.setCurrentItem(1);
-                        break;
-                }
-                return true;
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.image_frag:
+                    viewPager.setCurrentItem(0);
+                    break;
+                case R.id.file_frag:
+                    viewPager.setCurrentItem(1);
+                    break;
             }
+            return true;
         });
     }
 
@@ -221,7 +212,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 viewPager.setCurrentItem(currentFragmentPosition - 1);
             } else {
                 showExitDialog();
-
             }
         }
     }
@@ -286,10 +276,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(intent);
                 break;
             case R.id.nav_changeAvatar:
-                intent = new Intent(MainActivity.this, ChangeAvatarActivity.class);
+                intent = new Intent(MainActivity.this, ChangeAvatarAndUserNameActivity.class);
                 startActivityForResult(intent, 3);
                 break;
             case R.id.nav_guide:
+                intent = new Intent(MainActivity.this, GuideActivity.class);
+                startActivity(intent);
                 break;
             case R.id.nav_feedback:
                 String recipientEmail = "dodanhtuandbnl@gmail.com";
@@ -313,11 +305,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void signOut() {
-        googleSignInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                // Google Sign Out completed
-            }
+        googleSignInClient.signOut().addOnCompleteListener(this, task -> {
+            // Google Sign Out completed
         });
     }
 
@@ -325,24 +314,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Xác nhận thoát ứng dụng");
         builder.setMessage("Bạn có chắc muốn thoát ứng dụng?");
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                auth.signOut();
-                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
-                GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(MainActivity.this, gso);
-                googleSignInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                    }
-                });
-                finish();
-            }
-        }).setNegativeButton("Quay lại", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            auth.signOut();
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
+            GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(MainActivity.this, gso);
+            googleSignInClient.signOut().addOnCompleteListener(task -> {
+            });
+            finish();
+        }).setNegativeButton("Quay lại", (dialog, which) -> {
 
-            }
         });
         builder.show();
     }
@@ -367,12 +347,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 List<? extends UserInfo> providerData = user.getProviderData();
                 for (UserInfo userInfo : providerData) {
                     String providerId = userInfo.getProviderId();
-                    if (providerId.equals("firebase")) {
-                        email += ".firebase";
-                    } else if (providerId.equals("google.com")) {
-                        email += ".google";
-                    } else if (providerId.equals("facebook.com")) {
-                        email += ".facebook";
+                    switch (providerId) {
+                        case "firebase":
+                            email += ".firebase";
+                            break;
+                        case "google.com":
+                            email += ".google";
+                            break;
+                        case "facebook.com":
+                            email += ".facebook";
+                            break;
                     }
                 }
             }
@@ -383,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (user != null) {
             Uri photoUrl = user.getPhotoUrl();
             if (photoUrl != null) {
-                avatar = user.getPhotoUrl().toString();
+                String avatar = user.getPhotoUrl().toString();
                 if (!avatar.equals("")) {
                     RequestOptions requestOptions = new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL);
                     Glide.with(MainActivity.this).load(avatar).apply(requestOptions).circleCrop().into(userAvatar);

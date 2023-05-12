@@ -9,6 +9,7 @@ import com.example.encryptit.model.EncryptFile;
 import net.sqlcipher.Cursor;
 import net.sqlcipher.SQLException;
 import net.sqlcipher.database.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteStatement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
 public class FileDAO {
     private final DatabaseHelper dbHelper;
     private SQLiteDatabase db;
+
     public FileDAO(Context context) {
         dbHelper = new DatabaseHelper(context);
     }
@@ -32,7 +34,8 @@ public class FileDAO {
     public int getMaxId() {
         open();
         int maxId = 0;
-        android.database.Cursor cursor = db.rawQuery("SELECT MAX(_id) FROM " + DatabaseHelper.TABLE_FILE, null);
+        String query = "SELECT MAX(_id) FROM " + DatabaseHelper.TABLE_FILE;
+        android.database.Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {
             maxId = cursor.getInt(0);
         }
@@ -53,26 +56,49 @@ public class FileDAO {
         values.put(DatabaseHelper.COLUMN_IS_IMAGE, encryptFile.getImage() ? 1 : 0);
         values.put(DatabaseHelper.COLUMN_EMAIL, encryptFile.getEmail());
 
-        db.insert(DatabaseHelper.TABLE_FILE, null, values);
+        String query = "INSERT INTO " + DatabaseHelper.TABLE_FILE + " (" +
+                DatabaseHelper.COLUMN_FILE_PATH + "," +
+                DatabaseHelper.COLUMN_FILE_NAME_AND_EXTENSION + "," +
+                DatabaseHelper.COLUMN_FILE_NAME + "," +
+                DatabaseHelper.COLUMN_FILE_EXTENSION + "," +
+                DatabaseHelper.COLUMN_FILE_LOCATION + "," +
+                DatabaseHelper.COLUMN_ALIAS + "," +
+                DatabaseHelper.COLUMN_IS_IMAGE + "," +
+                DatabaseHelper.COLUMN_EMAIL + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        SQLiteStatement statement = db.compileStatement(query);
+        statement.bindString(1, encryptFile.getFilePath());
+        statement.bindString(2, encryptFile.getFileNameAndExtension());
+        statement.bindString(3, encryptFile.getFileName());
+        statement.bindString(4, encryptFile.getFileExtension());
+        statement.bindString(5, encryptFile.getFileLocation());
+        statement.bindString(6, encryptFile.getAlias());
+        statement.bindLong(7, encryptFile.getImage() ? 1 : 0);
+        statement.bindString(8, encryptFile.getEmail());
+
+        statement.executeInsert();
 
         Log.d("Database", "add ok " + encryptFile.getEmail());
 
         close();
     }
 
+
     public void deleteFile(EncryptFile encryptFile) {
         open();
-        db.delete(DatabaseHelper.TABLE_FILE, DatabaseHelper.COLUMN_FILE_PATH + " = ?", new String[]{String.valueOf(encryptFile.getFilePath())});
+        String whereClause = DatabaseHelper.COLUMN_FILE_PATH + " = ?";
+        String[] whereArgs = new String[]{encryptFile.getFilePath()};
+        db.delete(DatabaseHelper.TABLE_FILE, whereClause, whereArgs);
         close();
     }
+
 
     public List<EncryptFile> getAllImages(String email) {
         open();
         List<EncryptFile> encryptFiles = new ArrayList<>();
 
-        String selectQuery = "SELECT  * FROM " + DatabaseHelper.TABLE_FILE + " WHERE is_image = 1 AND email = '" + email + "';";
-
-        Cursor cursor = db.rawQuery(selectQuery, null);
+        String selectQuery = "SELECT  * FROM " + DatabaseHelper.TABLE_FILE + " WHERE is_image = ? AND email = ?;";
+        String[] selectionArgs = new String[]{"1", email};
+        Cursor cursor = db.rawQuery(selectQuery, selectionArgs);
 
         if (cursor.moveToFirst()) {
             do {
@@ -96,13 +122,15 @@ public class FileDAO {
         return encryptFiles;
     }
 
+
     public List<EncryptFile> getAllFiles(String email) {
         open();
         List<EncryptFile> encryptFiles = new ArrayList<>();
 
-        String selectQuery = "SELECT  * FROM " + DatabaseHelper.TABLE_FILE + " WHERE is_image = 0 AND email = '" + email + "';";
+        String selectQuery = "SELECT * FROM " + DatabaseHelper.TABLE_FILE + " WHERE is_image = 0 AND email = ?;";
+        String[] selectionArgs = {email};
 
-        Cursor cursor = db.rawQuery(selectQuery, null);
+        Cursor cursor = db.rawQuery(selectQuery, selectionArgs);
 
         if (cursor.moveToFirst()) {
             do {
