@@ -70,7 +70,7 @@ public class AddFileToEncryptTask extends AsyncTask<Uri, Void, List<EncryptFile>
         Toast.makeText(context, "Đã mã hoá thành công " + files.size() + " file!", Toast.LENGTH_SHORT).show();
         List<EncryptFile> encryptFiles = FileFragment.getEncryptFileList();
         for (EncryptFile f : files) {
-            if (f.getImage() == true) {
+            if (f.getImage()) {
                 new AddImageToViewTask().execute(f);
             } else {
                 encryptFiles.add(f);

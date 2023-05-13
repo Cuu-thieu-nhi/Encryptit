@@ -6,10 +6,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -67,39 +65,33 @@ public class ImageRecycleViewAdapter extends RecyclerView.Adapter<ImageViewHolde
             Log.d("FileRecycleViewAdapter", "onClick: select to un-select " + position + " " + holder.getAdapterPosition());
         }
 
-        holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (holder.isSelected() && !selectedFiles.isEmpty()) {
-                    iClickImageListener.onLongClickImageListener(selectedFiles);
-                } else {
-                    iClickImageListener.onClickImageListener(encryptedImage);
-                }
+        holder.relativeLayout.setOnClickListener(view -> {
+            if (holder.isSelected() && !selectedFiles.isEmpty()) {
+                iClickImageListener.onLongClickImageListener(selectedFiles);
+            } else {
+                iClickImageListener.onClickImageListener(encryptedImage);
             }
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
+        holder.itemView.setOnLongClickListener(v -> {
 
-                if (holder.isSelected() == null) holder.setSelected(false);
+            if (holder.isSelected() == null) holder.setSelected(false);
 
-                boolean isSelected = !holder.isSelected();
-                holder.setSelected(isSelected);
-                if (isSelected) {
-                    int color = ContextCompat.getColor(context, R.color.file_selected);
-                    selectedFiles.add(decryptedImages.get(position));
-                    holder.relativeLayout.setBackgroundColor(color);
-                    Log.d("ImageRecycleViewAdapter", "onClick: un-select to select " + position + " " + holder.getAdapterPosition());
+            boolean isSelected1 = !holder.isSelected();
+            holder.setSelected(isSelected1);
+            if (isSelected1) {
+                int color = ContextCompat.getColor(context, R.color.file_selected);
+                selectedFiles.add(decryptedImages.get(position));
+                holder.relativeLayout.setBackgroundColor(color);
+                Log.d("ImageRecycleViewAdapter", "onClick: un-select to select " + position + " " + holder.getAdapterPosition());
 
-                } else {
-                    int color = ContextCompat.getColor(context, R.color.main);
-                    selectedFiles.remove(decryptedImages.get(position));
-                    holder.relativeLayout.setBackgroundColor(color);
-                    Log.d("ImageRecycleViewAdapter", "onClick: select to un-select " + position + " " + holder.getAdapterPosition());
-                }
-                return true;
+            } else {
+                int color = ContextCompat.getColor(context, R.color.main);
+                selectedFiles.remove(decryptedImages.get(position));
+                holder.relativeLayout.setBackgroundColor(color);
+                Log.d("ImageRecycleViewAdapter", "onClick: select to un-select " + position + " " + holder.getAdapterPosition());
             }
+            return true;
         });
     }
 

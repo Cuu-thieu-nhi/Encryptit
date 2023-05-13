@@ -23,8 +23,6 @@ import com.google.firebase.auth.FirebaseUser;
 public class ChangePasswordActivity extends AppCompatActivity {
 
     private EditText oldPass, newPass;
-    private Button btnChange, btnBack;
-    private FirebaseAuth auth;
 
     private FirebaseUser user;
     private ProgressBar progressBar;
@@ -36,76 +34,55 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
         oldPass = (EditText) findViewById(R.id.oldPass);
         newPass = (EditText) findViewById(R.id.newPass);
-        btnChange = (Button) findViewById(R.id.btn_reset_password);
-        btnBack = (Button) findViewById(R.id.btn_back);
+        Button btnChange = (Button) findViewById(R.id.btn_reset_password);
+        Button btnBack = (Button) findViewById(R.id.btn_back);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        auth = FirebaseAuth.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        btnBack.setOnClickListener(v -> finish());
 
-        btnChange.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btnChange.setOnClickListener(v -> {
 
-                String oldPassword = oldPass.getText().toString().trim();
+            String oldPassword = oldPass.getText().toString().trim();
 
-                String newPassword = newPass.getText().toString().trim();
+            String newPassword = newPass.getText().toString().trim();
 
-                progressBar.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
 
-                Log.d("ChangePass", user.getEmail() + " " + oldPassword);
+            Log.d("ChangePass", user.getEmail() + " " + oldPassword);
 
-                AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), oldPassword);
+            AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), oldPassword);
 
-                user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            user.updatePassword(newPassword).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        progressBar.setVisibility(View.INVISIBLE);
-                                        Toast.makeText(getApplication(), "Change password successfully!", Toast.LENGTH_SHORT).show();
-                                        return;
-                                    } else {
-                                        progressBar.setVisibility(View.INVISIBLE);
-                                        Toast.makeText(getApplication(), "Error, please try again!", Toast.LENGTH_SHORT).show();
-                                        return;
-                                    }
-                                }
-                            });
+            user.reauthenticate(credential).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    user.updatePassword(newPassword).addOnCompleteListener(task1 -> {
+                        if (task1.isSuccessful()) {
+                            progressBar.setVisibility(View.INVISIBLE);
+                            Toast.makeText(getApplication(), "Change password successfully!", Toast.LENGTH_SHORT).show();
                         } else {
-                            if (TextUtils.isEmpty(oldPassword)) {
-                                Toast.makeText(getApplication(), "Enter your old password", Toast.LENGTH_SHORT).show();
-                                return;
-                            } else {
-                                Toast.makeText(getApplication(), "Please check your old password", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                        }
-                    }
-                });
-
-                user.updatePassword(newPassword).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            finish();
-                        } else {
+                            progressBar.setVisibility(View.INVISIBLE);
                             Toast.makeText(getApplication(), "Error, please try again!", Toast.LENGTH_SHORT).show();
-                            finish();
                         }
+                    });
+                } else {
+                    if (TextUtils.isEmpty(oldPassword)) {
+                        Toast.makeText(getApplication(), "Enter your old password", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplication(), "Please check your old password", Toast.LENGTH_SHORT).show();
                     }
-                });
-            }
+                }
+            });
+
+            user.updatePassword(newPassword).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    finish();
+                } else {
+                    Toast.makeText(getApplication(), "Error, please try again!", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            });
         });
     }
 

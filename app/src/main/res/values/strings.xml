@@ -34,9 +34,9 @@
 
     <!--    <string name="default_web_client_id">956161453122-ih8cb633chq7572h68fvinqtdph06frb.apps.googleusercontent.com</string>-->
 
-    <string name="facebook_app_id">595680772522614</string>
+    <string name="facebook_app_id">914585813167255</string>
     <string name="fb_login_protocol_scheme">fb1234</string>
-    <string name="facebook_client_token">00903906a926d3b5e779bbef0d489c0e</string>
+    <string name="facebook_client_token">6834b141f79097ca8c3d5ab7ef213e6d</string>
 
 
 </resources>

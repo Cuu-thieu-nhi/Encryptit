@@ -27,14 +27,11 @@ public class MyKeyStore {
             KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
             keyGenerator.init(new KeyGenParameterSpec.Builder(getFullAlias(alias), KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT).setBlockModes(KeyProperties.BLOCK_MODE_CBC).setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7).build());
 
-            SecretKey secretKey = keyGenerator.generateKey();
-            return secretKey;
+            return keyGenerator.generateKey();
         } catch (InvalidAlgorithmParameterException e) {
             Log.d("MyKeyStore", "generateSecretKey: error");
             throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchProviderException e) {
+        } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
             throw new RuntimeException(e);
         }
     }

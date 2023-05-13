@@ -2,9 +2,9 @@ package com.example.encryptit.utils;
 
 public class GetFileName {
     public static String getFileNameAndExtension (String path) {
-        StringBuffer reversePath = new StringBuffer(path);
+        StringBuilder reversePath = new StringBuilder(path);
         String reverseFileName =  reversePath.reverse().toString();
-        StringBuffer fileName = new StringBuffer();
+        StringBuilder fileName = new StringBuilder();
         for (int i = 0; i < reverseFileName.length(); i ++) {
             if (reverseFileName.charAt(i) != '/')
                 fileName.append(reverseFileName.charAt(i));
@@ -14,8 +14,8 @@ public class GetFileName {
     }
 
     public static String getFileName (String path) {
-        StringBuffer fileNameAndExtension = new StringBuffer(getFileNameAndExtension(path));
-        StringBuffer fileName = new StringBuffer();
+        StringBuilder fileNameAndExtension = new StringBuilder(getFileNameAndExtension(path));
+        StringBuilder fileName = new StringBuilder();
         for (int i = 0; i < fileNameAndExtension.length(); i ++) {
             if (fileNameAndExtension.charAt(i) != '.')
                 fileName.append(fileNameAndExtension.charAt(i));
@@ -25,8 +25,8 @@ public class GetFileName {
     }
 
     public static String getFileExtension (String path) {
-        StringBuffer fileNameAndExtension = new StringBuffer(getFileNameAndExtension(path));
-        StringBuffer fileExtension = new StringBuffer();
+        StringBuilder fileNameAndExtension = new StringBuilder(getFileNameAndExtension(path));
+        StringBuilder fileExtension = new StringBuilder();
         for (int i = fileNameAndExtension.length() - 1; i >= 0; i --) {
             if (fileNameAndExtension.charAt(i) != '.')
                 fileExtension.append(fileNameAndExtension.charAt(i));
@@ -36,9 +36,9 @@ public class GetFileName {
     }
 
     public static String getFileLocation (String path) {
-        StringBuffer pathh = new StringBuffer(path);
+        StringBuilder pathh = new StringBuilder(path);
         int last = 0;
-        StringBuffer fileLocation = new StringBuffer();
+        StringBuilder fileLocation = new StringBuilder();
         for (int i = 0; i < pathh.length(); i ++) {
             if (path.charAt(i) == '/')
                 last = i;

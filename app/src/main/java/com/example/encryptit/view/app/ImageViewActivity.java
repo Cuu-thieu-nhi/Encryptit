@@ -1,7 +1,6 @@
 package com.example.encryptit.view.app;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -47,15 +46,12 @@ public class ImageViewActivity extends AppCompatActivity {
         byte[] data = MyEncrypter.decryptFileToViewTemporary(location + "/" + name + ".encrypt", key);
         Glide.with(ImageViewActivity.this).load(data).into(imageView);
 
-        btDec.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                TempImageToView t = new TempImageToView();
-                t.setFile(image);
+        btDec.setOnClickListener(view -> {
+            TempImageToView t = new TempImageToView();
+            t.setFile(image);
 //                t.setData(data);
-                AddImageToDecryptTask task = new AddImageToDecryptTask(ImageViewActivity.this);
-                task.execute(t);
-            }
+            AddImageToDecryptTask task = new AddImageToDecryptTask(ImageViewActivity.this);
+            task.execute(t);
         });
     }
 }

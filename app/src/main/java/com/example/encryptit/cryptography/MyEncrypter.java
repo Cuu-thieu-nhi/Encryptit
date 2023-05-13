@@ -57,15 +57,8 @@ public class MyEncrypter {
         } catch (IllegalBlockSizeException e) {
             Log.d(TAG, "encryptFile: IllegalBlockSizeException");
             throw new RuntimeException(e);
-        } catch (BadPaddingException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidKeyException e) {
-            throw new RuntimeException(e);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (BadPaddingException | InvalidKeyException | NoSuchAlgorithmException |
+                 IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -100,21 +93,9 @@ public class MyEncrypter {
             outputStream.close();
 
             DeleteFile.deleteFile(inputFilePath);
-        } catch (NoSuchPaddingException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalBlockSizeException e) {
-            throw new RuntimeException(e);
-        } catch (BadPaddingException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidAlgorithmParameterException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidKeyException e) {
-            throw new RuntimeException(e);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException |
+                 InvalidAlgorithmParameterException | InvalidKeyException | IOException |
+                 NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
@@ -149,21 +130,9 @@ public class MyEncrypter {
             outputStream.close();
             return outputStream.toByteArray();
 
-        } catch (NoSuchPaddingException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalBlockSizeException e) {
-            throw new RuntimeException(e);
-        } catch (BadPaddingException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidAlgorithmParameterException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidKeyException e) {
-            throw new RuntimeException(e);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException |
+                 InvalidAlgorithmParameterException | InvalidKeyException | IOException |
+                 NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }

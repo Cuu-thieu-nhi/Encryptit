@@ -114,36 +114,30 @@ public class FileRecycleViewAdapter extends RecyclerView.Adapter<FileViewHolder>
                 break;
         }
         holder.textView.setText(f.getFileNameAndExtension());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (holder.isSelected() == null) holder.setSelected(false);
+        holder.itemView.setOnClickListener(v -> {
+            if (holder.isSelected() == null) holder.setSelected(false);
 
-                boolean isSelected = !holder.isSelected();
-                holder.setSelected(isSelected);
-                if (isSelected) {
-                    int color = ContextCompat.getColor(context, R.color.file_selected);
-                    selectedFiles.add(files.get(position));
-                    holder.linearLayout.setBackgroundColor(color);
-                    Log.d("FileRecycleViewAdapter", "onClick: un-select to select " + position + " " + holder.getAdapterPosition() + " " + holder.linearLayout.getBackground());
+            boolean isSelected1 = !holder.isSelected();
+            holder.setSelected(isSelected1);
+            if (isSelected1) {
+                int color = ContextCompat.getColor(context, R.color.file_selected);
+                selectedFiles.add(files.get(position));
+                holder.linearLayout.setBackgroundColor(color);
+                Log.d("FileRecycleViewAdapter", "onClick: un-select to select " + position + " " + holder.getAdapterPosition() + " " + holder.linearLayout.getBackground());
 
-                } else {
-                    int color = ContextCompat.getColor(context, R.color.white);
-                    selectedFiles.remove(files.get(position));
-                    holder.linearLayout.setBackgroundColor(color);
-                    Log.d("FileRecycleViewAdapter", "onClick: select to un-select " + position + " " + holder.getAdapterPosition() + " " + holder.linearLayout.getBackground());
-                }
+            } else {
+                int color = ContextCompat.getColor(context, R.color.white);
+                selectedFiles.remove(files.get(position));
+                holder.linearLayout.setBackgroundColor(color);
+                Log.d("FileRecycleViewAdapter", "onClick: select to un-select " + position + " " + holder.getAdapterPosition() + " " + holder.linearLayout.getBackground());
             }
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (holder.isSelected() && !selectedFiles.isEmpty()) {
-                    iClickFileListener.onLongClickImageListener(selectedFiles);
-                }
-                return true;
+        holder.itemView.setOnLongClickListener(v -> {
+            if (holder.isSelected() && !selectedFiles.isEmpty()) {
+                iClickFileListener.onLongClickImageListener(selectedFiles);
             }
+            return true;
         });
     }
 
